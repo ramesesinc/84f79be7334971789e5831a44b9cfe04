@@ -23,7 +23,7 @@ server {
         proxy_pass http://${app_server_ip}:5000;
     }
 
-    location ~* ^/filipizen/webhooks/(paymaya|gcash) {
+    location ~* ^/filipizen/webhooks/(paymaya|gcash|lbp) {
         include conf.d/proxy.conf;
         proxy_pass http://${app_server_ip}:5000;
     }
