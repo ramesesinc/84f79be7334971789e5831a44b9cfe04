@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.004b194e.chunk.css",
-    "main.js": "/static/js/main.bfa8bd05.chunk.js",
+    "main.js": "/static/js/main.01e5a4cd.chunk.js",
     "runtime-main.js": "/static/js/runtime-main.6396409b.js",
     "static/css/2.826a7d64.chunk.css": "/static/css/2.826a7d64.chunk.css",
     "static/js/2.89553fb2.chunk.js": "/static/js/2.89553fb2.chunk.js",
@@ -13,7 +13,7 @@
     "static/js/6.cea2a582.chunk.js": "/static/js/6.cea2a582.chunk.js",
     "static/js/7.7b77480d.chunk.js": "/static/js/7.7b77480d.chunk.js",
     "index.html": "/index.html",
-    "precache-manifest.2dd4cd7364fe4ff83babb54542cab7b1.js": "/precache-manifest.2dd4cd7364fe4ff83babb54542cab7b1.js",
+    "precache-manifest.5d560d043a20657bcff3d5a175117037.js": "/precache-manifest.5d560d043a20657bcff3d5a175117037.js",
     "service-worker.js": "/service-worker.js",
     "static/js/2.89553fb2.chunk.js.LICENSE.txt": "/static/js/2.89553fb2.chunk.js.LICENSE.txt",
     "static/media/filipizen.svg": "/static/media/filipizen.5fd85b9e.svg",
@@ -24,6 +24,6 @@
     "static/css/2.826a7d64.chunk.css",
     "static/js/2.89553fb2.chunk.js",
     "static/css/main.004b194e.chunk.css",
-    "static/js/main.bfa8bd05.chunk.js"
+    "static/js/main.01e5a4cd.chunk.js"
   ]
 }
