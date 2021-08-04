@@ -63,7 +63,7 @@ public class OnlineBuildingPermitService  {
 	}
 
 	def formatPersonalName( def v ) {
-		return v.lastname + ", " + v.firstname + " " + ((v.middlename!=null && v.middlename.trim().length() > 0)?v.middlename.substring(0,1)+'.': '');
+		return v.lastname + ", " + v.firstname + (v.middlename ? ' ' + v.middlename : '')
 	}
 
 	//reusable method of saving entity
