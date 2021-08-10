@@ -86,9 +86,10 @@ class PayMayaPaymentPartnerOptionInterceptor {
 		def paymentorderid = checkout.requestReferenceNumber;
 
 		// unsuccessful payment, log and return 200
-		if (checkout.paymentStatus != "PAYMENT_SUCCESS") {
+		def payStatus = (checkout.paymentStatus ? checkout.paymentStatus : checkout.status);
+		if (payStatus != "PAYMENT_SUCCESS") {
 			result.status = 200;
-			log('afterPostPartnerWebhook:  unsuccessful payment: '+ paymentorderid +': '+ checkout.paymentStatus);
+			log('afterPostPartnerWebhook:  unsuccessful payment: '+ paymentorderid +': '+ payStatus);
 			return;
 		}
 
