@@ -1,0 +1,17 @@
+import com.rameses.annotations.*;
+
+class OnlinePsicService 
+{
+	@ActiveDB('online_psic')
+	def em;
+
+	@ProxyMethod
+	public def getClasses(param) {
+		if (!param.searchtext) param.searchtext = '';
+		param.searchtext += '%';
+		param._limit = 25;
+		return em.getClasses(param);
+	}
+
+
+} 

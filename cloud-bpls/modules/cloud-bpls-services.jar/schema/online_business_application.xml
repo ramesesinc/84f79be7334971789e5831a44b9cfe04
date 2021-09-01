@@ -1,0 +1,40 @@
+<schema>
+	<element tablename="online_business_application">
+		<field name="objid" primary="true" prefix="OBA" /> 
+		<field name="state" required="true" /> 
+		<field name="dtcreated" required="true" /> 
+		<field name="createdby_objid" required="true" /> 
+		<field name="createdby_name" required="true" /> 
+		<field name="controlno" required="true" /> 
+		<field name="prevapplicationid" /> 
+		<field name="business_objid" /> 
+		<field name="appyear" required="true" /> 
+		<field name="apptype" required="true" /> 
+		<field name="appdate" required="true" /> 
+		<field name="step" required="true" type="integer"/>
+		<field name="orgcode" required="true" />
+		<field name="partnername" required="true" />
+		<field name="businessname" required="true" />
+		<field name="tradename" />
+		<field name="businessaddress" />
+		<field name="orgtype" />
+		<field name="officetype" />
+		<field name="branch" />
+
+		<complex name="lobinfo" required="true" serializer="default" type="map" /> 
+		<complex name="infos" required="true" serializer="default" type="list" /> 
+		<complex name="requirements" required="true" serializer="default" type="list" /> 
+		<complex name="attachments" required="true" serializer="default" type="list" /> 
+
+		<field name="contact_name" required="true" /> 
+		<field name="contact_address" required="true" /> 
+		<field name="contact_email" required="true" /> 
+		<field name="contact_mobileno" /> 
+
+		<!-- this is populated during approval --> 
+		<field name="dtapproved" /> 
+		<field name="approvedby_objid" /> 
+		<field name="approvedby_name" /> 
+		<field name="approvedappno" /> 
+	</element> 
+</schema> 

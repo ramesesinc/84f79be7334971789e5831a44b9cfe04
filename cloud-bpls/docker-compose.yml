@@ -1,0 +1,42 @@
+version: "3"
+
+services:
+
+  cloud-obo-server:
+    image: "ramesesinc/cloud-obo-server:v001"
+    container_name: cloud-bpls-server
+    restart: always
+    logging: 
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: "10m"
+    environment:
+      TZ: "Asia/Manila"
+    env_file:
+      - ./env.conf
+      - ../_custom/env.conf
+    ports:
+      - "10002:8070"
+    volumes:
+      - ../_custom/datasources/bplsds:/apps/server/services/datasources/mainds      
+
+      - ./lib/barbecue-1.5.jar:/apps/server/lib/barbecue-1.5.jar
+      - ./lib/commons-cli-1.1.jar:/apps/server/lib/commons-cli-1.1.jar
+      - ./lib/itext-1.3.1.jar:/apps/server/lib/itext-1.3.1.jar
+      - ./lib/itextpdf-5.1.2.jar:/apps/server/lib/itextpdf-5.1.2.jar
+      - ./lib/jasperreports-3.0.0.jar:/apps/server/lib/jasperreports-3.0.0.jar
+      - ./lib/jdt-compiler-3.1.1.jar:/apps/server/lib/jdt-compiler-3.1.1.jar
+      - ./lib/osiris2-report.jar:/apps/server/lib/osiris2-report.jar
+      - ./lib/png-encoder-1.5.jar:/apps/server/lib/png-encoder-1.5.jar
+      - ./lib/poi-3.0.1-FINAL-20070705.jar:/apps/server/lib/poi-3.0.1-FINAL-20070705.jar
+      - ./lib/zxing-core-3.3.0.jar:/apps/server/lib/zxing-core-3.3.0.jar
+      - ./lib/zxing-javase-3.3.0.jar:/apps/server/lib/zxing-javase-3.3.0.jar
+      - ./lib/rameses-common2.jar:/apps/server/lib/rameses-common2.jar
+      - ./lib/rameses-osiris3-core2.jar:/apps/server/lib/rameses-osiris3-core2.jar
+      - ./lib/rameses-osiris3-server.jar:/apps/server/lib/rameses-osiris3-server.jar
+      
+      - ./modules:/apps/server/services/apps/enterprise/modules
+      
+      - ../_custom/jasper:/apps/server/templates/custom
+      - ../_custom/output:/apps/server/output

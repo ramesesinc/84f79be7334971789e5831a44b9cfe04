@@ -1,0 +1,32 @@
+<schema>
+	<element tablename="online_business_application_entity">
+		<field name="objid" primary="true" prefix="OBE"/>
+		<field name="appid" required="true" />
+		<field name="profileid" />
+		<field name="entitytype" />
+		<field name="profileno" />
+		<field name="name" />
+		<field name="firstname" />
+		<field name="middlename" />
+		<field name="lastname" />
+		<field name="birthdate" type="date" />
+		<field name="gender" />
+		<field name="resident" type="boolean" />
+		<field name="address_objid" />
+		<field name="address_text" />
+		<field name="address_unitno" />
+		<field name="address_bldgno" />
+		<field name="address_bldgname" />
+		<field name="address_street" />
+		<field name="address_subdivision" />
+		<field name="address_barangay_objid" />
+		<field name="address_barangay_name" />
+		<field name="address_citymunicipality" />
+		<field name="address_province" />
+		<field name="tin" />
+		<field name="email" />
+		<field name="mobileno" />
+		<field name="phoneno" />
+		<complex name="id" required="false" serializer="default" type="map" /> 
+	</element> 
+</schema> 

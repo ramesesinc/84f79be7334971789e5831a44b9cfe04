@@ -1,0 +1,25 @@
+<schema>
+	<element tablename="online_business_application_location">
+		<field name="objid" primary="true" prefix="OBL" />
+		<field name="appid" required="true" />
+		<field name="type" />
+		<field name="lessor_objid" />
+		<field name="lessor_name" />
+		<field name="lessor_address" />
+		<field name="lessor_unitno" />
+		<field name="lessor_location" />
+		<field name="lessor_rent" type="integer" />
+		<field name="lessor_bldgname" />
+		<field name="bldgname" />
+		<field name="unitno" />
+		<field name="street" />
+		<field name="barangay_objid" />
+		<field name="barangay_name" />
+		<field name="td_objid" />
+		<field name="td_tdno" />
+		<field name="market_objid" />
+		<field name="market_name" />
+		<field name="market_address" />
+		<field name="market_bldgname" />
+	</element> 
+</schema> 
