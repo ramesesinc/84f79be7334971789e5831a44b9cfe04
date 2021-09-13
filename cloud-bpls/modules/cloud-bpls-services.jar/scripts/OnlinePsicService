@@ -6,12 +6,10 @@ class OnlinePsicService
 	def em;
 
 	@ProxyMethod
-	public def getClasses(param) {
+	public def getSubclasses(param) {
 		if (!param.searchtext) param.searchtext = '';
-		param.searchtext += '%';
+		param.searchtext = '%' + param.searchtext + '%';
 		param._limit = 25;
-		return em.getClasses(param);
+		return em.getSubclasses(param);
 	}
-
-
 } 

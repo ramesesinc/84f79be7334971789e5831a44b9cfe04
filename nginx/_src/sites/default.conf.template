@@ -32,19 +32,24 @@ server {
     ## 
     ## attachment 
     ## 
+    location /filipizen/attachments {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:5000/attachments;
+    }
+
     location /filipizen/attachment/upload {
         include conf.d/proxy.conf;
         proxy_pass http://${app_server_ip}:5000/filipizen/attachment/upload;
     }
 
+    location /filipizen/attachment/delete {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:5000/filipizen/attachment/delete;
+    }
+
     location /filipizen/attachment/download {
         include conf.d/proxy.conf;
         proxy_pass http://${app_server_ip}:5000/filipizen/attachment/download$is_args$args;
-    }
-
-    location /filipizen/attachment/delete {
-        include conf.d/proxy.conf;
-        proxy_pass http://${app_server_ip}:5000/filipizen/attachment/delete$is_args$args;
     }
 
     location /filipizen/attachment/list {

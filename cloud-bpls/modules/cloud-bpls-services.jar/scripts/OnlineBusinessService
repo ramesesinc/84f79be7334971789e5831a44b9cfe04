@@ -1,7 +1,7 @@
 import com.rameses.annotations.*;
 import com.rameses.util.KeyGen; 
 
-class OnlineNewBusinessService 
+class OnlineBusinessService 
 {
 	@Service('DateService')
 	def dtSvc;
@@ -66,6 +66,8 @@ class OnlineNewBusinessService
 		app.info = [:];
 		app.lobs = []; 
 		app.infos = []; 
+		app.appinfos = []; 
+		app.assessmentinfos = []; 
 		app.attachments = []; 
 		app.partnername = [ param.partner.group.name, param.partner.name ].join('_'); 
 		app.createdby = (param.user ? param.user : [:]); 
@@ -87,6 +89,8 @@ class OnlineNewBusinessService
 		app.tokenid = util.createToken(app.objid);
 		if (!app.infos) app.infos = [];
 		if (!app.lobs) app.lobs = [];
+		app.applicant = getApplicant(app);
+		app.location = getLocation(app);
 		return app;
 	}
 
@@ -104,18 +108,9 @@ class OnlineNewBusinessService
 	}
 
 	@ProxyMethod
-	public def getLobInfo(app) {
-		def lobinfo = [lobs:[]];
-		def info = em_app.select('lobinfo').find([objid: app.objid]).first();
-		if (info) {
-			lobinfo = info.lobinfo;
-		}
-		return lobinfo; 
-	}
-
-	@ProxyMethod
-	public def getInfos(app) {
-		return open(app);
+	public def getLobs(app) {
+		def info = em_app.select('lobs').find([objid: app.objid]).first();
+		return info.lobs ? info.lobs : []; 
 	}
 
 	@ProxyMethod
@@ -159,15 +154,19 @@ class OnlineNewBusinessService
 
 	@ProxyMethod
 	public def saveLocation(location) {
-		printInfo('location', location);
 		util.required('appid', location.appid);
+		em_app.find([objid: location.appid]).update([attachments: location.attachments, step: location._step]);
+
 		if (!location.barangay) location.barangay = null;
 		return em_location.save(location);
 	}
 
-	void printInfo(caption, entity) {
-		println '\n'*3;
-		println caption + '============================';
-		entity.each{k,v -> println k + ': ' + v};
+	@ProxyMethod
+	public def submit(app) {
+		def info = [:];
+		info.state = STATE_PENDING;
+		info.step = app.step;
+		em_app.find([objid: app.objid]).update(info);
+		return findApp(app);
 	}
 } 

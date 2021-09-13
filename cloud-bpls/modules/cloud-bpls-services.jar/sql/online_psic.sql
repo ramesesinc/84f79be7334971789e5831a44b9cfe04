@@ -1,3 +1,12 @@
+[getSubclasses]
+select 
+	s.*
+from online_psic_subclass s 
+where s.name like $P{searchtext} 
+   or s.code like $P{searchtext}
+order by s.name
+
+
 [getClasses]
 select 
 	c.*,

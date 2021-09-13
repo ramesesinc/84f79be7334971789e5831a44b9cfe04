@@ -21,8 +21,10 @@
 		<field name="officetype" />
 		<field name="branch" />
 
-		<complex name="lobinfo" required="true" serializer="default" type="map" /> 
+		<complex name="lobs" required="true" serializer="default" type="list" /> 
 		<complex name="infos" required="true" serializer="default" type="list" /> 
+		<complex name="appinfos" required="true" serializer="default" type="list" /> 
+		<complex name="assessmentinfos" required="true" serializer="default" type="list" /> 
 		<complex name="requirements" required="true" serializer="default" type="list" /> 
 		<complex name="attachments" required="true" serializer="default" type="list" /> 
 
