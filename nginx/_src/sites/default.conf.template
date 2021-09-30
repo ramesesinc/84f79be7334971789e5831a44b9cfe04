@@ -83,6 +83,18 @@ server {
 
 
     ## 
+    ## cloud-sms routing 
+    ##     
+    location /cloud-server/json/sms/ {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:9070/osiris3/json/enterprise/;
+    }
+    location /cloud-server/services/sms/ {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:9070/osiris3/services/enterprise/;
+    }
+
+    ## 
     ## cloud-partner routing 
     ##     
     location /cloud-server/json/partner/ {
