@@ -14,12 +14,12 @@ services:
       TZ: "Asia/Manila"
     env_file:
       - ./env.conf
-      - ../../_res/env.conf
-      - ../../_custom/env.conf
+      - ../_res/env.conf
+      - ../_custom/env.conf
     ports:
       - "9070:8070"
     volumes:
       - ./plugins:/enterprise/plugins
 
-      - ../../_custom/datasources/smsds:/services/datasources/mainds
-      - ../../_custom/output:/apps/server/output
+      - ../_custom/datasources/smsds:/services/datasources/mainds
+      - ../_custom/output:/apps/server/output
