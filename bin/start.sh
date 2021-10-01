@@ -14,8 +14,6 @@ cd $BASE_DIR/cloud-gdx-node && docker-compose up -d
 
 
 ## start the app server containers
-cd $BASE_DIR/cloud-sms && docker-compose up -d
-
 cd $BASE_DIR/cloud-jasper && docker-compose up -d
 
 cd $BASE_DIR/cloud-partner && docker-compose up -d
