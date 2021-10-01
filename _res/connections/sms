@@ -1,5 +1,5 @@
 provider=script
-app.host=${app_server_ip}:9070
-app.cluster=osiris3
-app.context=enterprise
+app.host=${sms_ip}
+app.cluster=cloud-server
+app.context=sms
 readTimeout=60000

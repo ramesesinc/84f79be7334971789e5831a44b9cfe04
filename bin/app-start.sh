@@ -6,8 +6,6 @@ BASE_DIR=`pwd`
 docker system prune -f
 
 ## start the app server containers
-cd $BASE_DIR/cloud-sms && docker-compose up -d
-
 cd $BASE_DIR/cloud-partner && docker-compose up -d
 
 cd $BASE_DIR/cloud-epayment && docker-compose up -d
