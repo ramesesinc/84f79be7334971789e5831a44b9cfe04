@@ -2,7 +2,7 @@ import com.rameses.annotations.*;
 
 class CloudPaymentMonitoringService {
 	
-	@ActiveDB('monitoring')
+	@ActiveDB('epayment_monitoring')
 	def em;
 
 	@DataContext('payment_partner')
