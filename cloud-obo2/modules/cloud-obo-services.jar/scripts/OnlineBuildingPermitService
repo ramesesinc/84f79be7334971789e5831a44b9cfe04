@@ -63,7 +63,7 @@ public class OnlineBuildingPermitService  {
 	}
 
 	def formatPersonalName( def v ) {
-		return v.lastname + ", " + v.firstname + (v.middlename ? ' ' + v.middlename : '')
+		return v.lastname + ", " + v.firstname + " " + ((v.middlename!=null && v.middlename.trim().length() > 0)?v.middlename.substring(0,1)+'.': '');
 	}
 
 	//reusable method of saving entity
@@ -274,7 +274,8 @@ public class OnlineBuildingPermitService  {
 	@ProxyMethod
 	public def getAvailableAncillaryPermitTypes( def o ) {
 		if(!o.appid) throw new Exception("appid is required");
-		return ancillaryEm.getAvailableAncillaryPermitTypes( [appid: o.appid] );
+		def orgid = appEm.find([objid: o.appid ]).select("orgcode").val();
+		return ancillaryEm.getAvailableAncillaryPermitTypes( [appid: o.appid, orgcode: orgid ] );
 	}
 
 	@ProxyMethod
