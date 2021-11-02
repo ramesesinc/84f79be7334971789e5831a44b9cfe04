@@ -1,0 +1,15 @@
+<schema>
+	<element tablename="payment_partner_webfee">
+		<field name="objid" primary="true" />
+		<field name="type" required="true" />
+		<field name="fee" type="decimal" required="true" />
+		<complex name="ranges" serializer="default" required="false" type="list" />
+		<!-- range format:-->
+		<!-- range comparison use:  amt >= from and amt < to -->
+		<!-- [
+			[from: 0|null, to: 500, fee: 10.00],
+			[from: 500, to: 1000, fee: 15.00],
+			[from: 1000, to: max|null, fee: 20.00],
+		] -->
+	</element>
+</schema>

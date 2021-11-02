@@ -32,12 +32,11 @@ class CloudPaymentService {
 	@XConnection("gdx-mq")
 	def gdx;
 
+	def DEFAULT_WEB_FEE = 0.0;
+
 	@ProxyMethod 
 	public def createPaymentOrder( param ) {
-		//get the web fee of partner here. either store it in payment database or field in partner.
-		//my suggestion is create a table in this domain, not the partner.	
-
-		param.webfee = 0.0; 
+		if (!param.webfee) param.webfee = DEFAULT_WEB_FEE; 
 
 		def df = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		if ( param.txndate instanceof java.util.Date ) {

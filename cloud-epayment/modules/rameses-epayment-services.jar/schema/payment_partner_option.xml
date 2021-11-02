@@ -6,5 +6,8 @@
 			<key field="paypartnerid" target="objid"/>	
 		</complex>
 		<complex name="info" serializer="default" required="true"/>
+		<complex name="webfee" ref="payment_partner_webfee" jointype="many-to-one" required="false">
+			<key field="objid" target="objid" />
+		</complex>
 	</element>
 </schema>

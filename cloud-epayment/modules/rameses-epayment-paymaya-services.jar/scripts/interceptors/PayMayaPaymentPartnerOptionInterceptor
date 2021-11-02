@@ -49,8 +49,9 @@ class PayMayaPaymentPartnerOptionInterceptor {
 	@After(pattern="CloudPaymentService.getPaymentPartnerOption", eval="#{result.paypartnerid.toLowerCase() == 'paymaya' }")
 	public void buildPaymentPartnerOption(evt) { 
 		def po = evt.args[0].paymentorder
-		def checkout = evt.args[0].checkout
 		def partner = evt.result.paypartner
+		def checkout = evt.args[0].checkout
+		if ( checkout == null ) checkout = [:]
 
 		def params = [:]
 		params.requestReferenceNumber = po.objid
