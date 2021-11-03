@@ -2,7 +2,7 @@ version: "3"
 services:
 
   jasper-node-server:
-    image: ramesesinc/jasper-node-server:0.0.1
+    image: ramesesinc/jasper-node-server:0.0.2
     container_name: jasper-node-server
     restart: always
     logging:
