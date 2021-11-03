@@ -2,7 +2,7 @@ version: "3"
 services:
 
   jasper-node-server:
-    image: ramesesinc/jasper-node-server:0.0.1
+    image: ramesesinc/jasper-node-server:0.0.2
     container_name: jasper-node-server
     restart: always
     logging:
@@ -13,7 +13,8 @@ services:
     environment:
       TZ: "Asia/Manila"
     env_file:
-      - ../_custom/env.conf
+      #- ../env.conf
+      - ../_custom/env.conf  
     ports:
       - "5005:5000"
     volumes:
