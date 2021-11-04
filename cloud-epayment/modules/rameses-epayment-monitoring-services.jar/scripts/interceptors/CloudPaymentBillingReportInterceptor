@@ -1,6 +1,7 @@
 import com.rameses.annotations.*;
 import com.rameses.util.Base64Cipher
 import com.rameses.services.extended.*;
+import com.rameses.util.ObjectDeserializer;
 
 class CloudPaymentBillingReportInterceptor {
 	@Service('DateService')
@@ -11,6 +12,9 @@ class CloudPaymentBillingReportInterceptor {
 
 	@ActiveDB('epayment_billing')
 	def em;
+
+	@Service(value="CloudPartnerService", connection="partner" )
+	def partnerSvc;
 
 	@After( pattern="FormReportService.getData", eval="#{args[0].reportid.matches('epayment_billing') }" )
 	public def getData( evt ) {
@@ -37,6 +41,26 @@ class CloudPaymentBillingReportInterceptor {
 
 		def billitems = em.getBilling(param);
 		if (!billitems) throw new Exception('No record found.');
+
+		def partners = partnerSvc.getActiveList().collect{ [id: it.id, title: it.title]};
+
+		billitems.each{ item ->
+			def partner = partners.find{it.id == item.orgcode}
+			def info = [:];
+			if (item.info) {
+				try {
+					info = ObjectDeserializer.instance.read(item.info)
+				} catch(err) {
+					//ignore
+				}
+			}
+
+			if (info && info.merchantcode) {
+				item.merchant = info.merchantcode + (partner ? ' - ' + partner.title : '');
+			} else {
+				item.merchant = item.orgcode + (partner ? ' - ' + partner.title : '');
+			}
+		}
 
 		def months = dtSvc.getMonths();
 		def month = months.find{it.index == Integer.parseInt(monthidx)}
