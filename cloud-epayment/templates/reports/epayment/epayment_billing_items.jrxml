@@ -36,6 +36,7 @@
 	<field name="webfee" class="java.lang.Number"/>
 	<field name="checkouttype" class="java.lang.String"/>
 	<field name="billperiod" class="java.lang.String"/>
+	<field name="merchant" class="java.lang.String"/>
 
 	<variable name="amount" class="java.lang.Number" resetType="Report" calculation="Sum">
 		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
@@ -46,6 +47,38 @@
 	<variable name="count" class="java.lang.Number" resetType="Report" calculation="Count">
 		<variableExpression><![CDATA[$F{paymentrefid}]]></variableExpression>
 	</variable>
+
+		<group  name="MERCHANT" >
+			<groupExpression><![CDATA[$F{merchant}]]></groupExpression>
+			<groupHeader>
+			<band height="16"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="0"
+						width="540"
+						height="16"
+						backcolor="#CCCCCC"
+						key="textField-9"/>
+					<box leftPadding="3" rightPadding="3">					<pen lineWidth="0.5" lineStyle="Solid"/>
+					<topPen lineWidth="0.5" lineStyle="Solid"/>
+					<leftPen lineWidth="0.5" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.5" lineStyle="Solid"/>
+					<rightPen lineWidth="0.5" lineStyle="Solid"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Times New Roman" pdfFontName="Helvetica-Bold" size="9" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{merchant}]]></textFieldExpression>
+				</textField>
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
 		<background>
 			<band height="0"  isSplitAllowed="true" >
 			</band>
