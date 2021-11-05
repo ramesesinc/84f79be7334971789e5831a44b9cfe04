@@ -134,7 +134,7 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Times New Roman" pdfFontName="Helvetica-Bold" size="9" isBold="true"/>
 					</textElement>
-				<text><![CDATA[Amount]]></text>
+				<text><![CDATA[Principal]]></text>
 				</staticText>
 				<staticText>
 					<reportElement
