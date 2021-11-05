@@ -17,7 +17,7 @@ select
 	po.mobileno,
 	po.phoneno,
 	po.origin,
-	case when po.webfee = 0 or po.webfee is null then 20 else po.webfee end as webfee,
+	20 as webfee,
 	po.checkouttype,
 	ppo.info
 from payment p 
