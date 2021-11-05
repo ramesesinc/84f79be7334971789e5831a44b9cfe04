@@ -55,10 +55,11 @@ class CloudPaymentBillingReportInterceptor {
 				}
 			}
 
+			item.merchant = partner.title;
 			if (info && info.merchantcode) {
-				item.merchant = info.merchantcode + (partner ? ' - ' + partner.title : '');
+				item.merchantid = info.merchantcode;
 			} else {
-				item.merchant = item.orgcode + (partner ? ' - ' + partner.title : '');
+				item.merchantid = item.orgcode;
 			}
 		}
 
@@ -68,7 +69,7 @@ class CloudPaymentBillingReportInterceptor {
 		data.template = "reports/epayment/" + reportid;
 		data.paypartner = paypartner;
 		data.billperiod = "For the Month of " + month.caption + ", " + year;
-		data.printdate = dtSvc.serverDate;
+		data.billdate = dtSvc.serverDate;
 		data.items = billitems;
 		result.data = data;
 	}

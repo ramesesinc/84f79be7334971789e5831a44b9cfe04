@@ -32,11 +32,12 @@ class CloudPaymentService {
 	@XConnection("gdx-mq")
 	def gdx;
 
-	def DEFAULT_WEB_FEE = 0.0;
+	def DEFAULT_WEB_FEE = 20.0;
 
 	@ProxyMethod 
 	public def createPaymentOrder( param ) {
 		if (!param.webfee) param.webfee = DEFAULT_WEB_FEE; 
+		if (!param.txnfee) param.txnfee = 0; 
 
 		def df = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		if ( param.txndate instanceof java.util.Date ) {
