@@ -412,9 +412,9 @@ Amount]]></text>
 				</textField>
 				<staticText>
 					<reportElement
-						x="309"
+						x="302"
 						y="0"
-						width="64"
+						width="71"
 						height="15"
 						key="staticText-12"/>
 					<box>					<topPen lineWidth="0.5" lineStyle="Solid"/>
