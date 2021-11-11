@@ -9,10 +9,10 @@
 		 orientation="Portrait"
 		 pageWidth="612"
 		 pageHeight="792"
-		 columnWidth="540"
+		 columnWidth="558"
 		 columnSpacing="0"
-		 leftMargin="36"
-		 rightMargin="36"
+		 leftMargin="27"
+		 rightMargin="27"
 		 topMargin="36"
 		 bottomMargin="36"
 		 whenNoDataType="NoPages"
@@ -44,7 +44,7 @@
 					<reportElement
 						x="0"
 						y="0"
-						width="540"
+						width="558"
 						height="24"
 						key="subreport-1"/>
 					<subreportParameter  name="BILLPERIOD">

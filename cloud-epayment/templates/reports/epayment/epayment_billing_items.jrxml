@@ -59,6 +59,9 @@
 	<variable name="count" class="java.lang.Number" resetType="Group" resetGroup="MERCHANT" calculation="Count">
 		<variableExpression><![CDATA[$F{paymentrefid}]]></variableExpression>
 	</variable>
+	<variable name="webfee" class="java.lang.Number" resetType="Group" resetGroup="MERCHANT" calculation="Sum">
+		<variableExpression><![CDATA[$F{webfee}]]></variableExpression>
+	</variable>
 
 		<group  name="MERCHANT" isStartNewPage="true" >
 			<groupExpression><![CDATA[$F{merchant}]]></groupExpression>
@@ -86,7 +89,7 @@
 					<reportElement
 						x="114"
 						y="188"
-						width="92"
+						width="51"
 						height="27"
 						key="staticText-7"/>
 					<box>					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -102,7 +105,7 @@
 				</staticText>
 				<staticText>
 					<reportElement
-						x="206"
+						x="165"
 						y="188"
 						width="208"
 						height="27"
@@ -120,9 +123,9 @@
 				</staticText>
 				<staticText>
 					<reportElement
-						x="414"
+						x="373"
 						y="188"
-						width="69"
+						width="75"
 						height="27"
 						key="staticText-10"/>
 					<box>					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -138,9 +141,9 @@
 				</staticText>
 				<staticText>
 					<reportElement
-						x="483"
+						x="447"
 						y="188"
-						width="57"
+						width="68"
 						height="27"
 						key="staticText-11"/>
 					<box>					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -170,7 +173,7 @@ Amount]]></text>
 					<reportElement
 						x="0"
 						y="35"
-						width="540"
+						width="557"
 						height="16"
 						key="staticText-13"/>
 					<box></box>
@@ -183,7 +186,7 @@ Amount]]></text>
 					<reportElement
 						x="0"
 						y="52"
-						width="540"
+						width="557"
 						height="11"
 						key="staticText-14"/>
 					<box></box>
@@ -196,7 +199,7 @@ Amount]]></text>
 					<reportElement
 						x="0"
 						y="63"
-						width="540"
+						width="557"
 						height="11"
 						key="staticText-15"/>
 					<box></box>
@@ -209,7 +212,7 @@ Amount]]></text>
 					<reportElement
 						x="0"
 						y="74"
-						width="540"
+						width="557"
 						height="11"
 						key="staticText-16"/>
 					<box></box>
@@ -222,20 +225,20 @@ Amount]]></text>
 					<reportElement
 						x="0"
 						y="101"
-						width="540"
+						width="557"
 						height="17"
 						key="staticText-17"/>
 					<box></box>
 					<textElement textAlignment="Center">
 						<font fontName="Times New Roman" pdfFontName="Helvetica-Bold" size="14" isBold="true"/>
 					</textElement>
-				<text><![CDATA[BILLING STATEMENT]]></text>
+				<text><![CDATA[TRANSACTION DETAILS]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="0"
 						y="119"
-						width="540"
+						width="557"
 						height="15"
 						key="textField-10"/>
 					<box></box>
@@ -300,7 +303,7 @@ Amount]]></text>
 					<reportElement
 						x="355"
 						y="145"
-						width="184"
+						width="201"
 						height="15"
 						key="textField-13"/>
 					<box></box>
@@ -326,7 +329,7 @@ Amount]]></text>
 					<reportElement
 						x="355"
 						y="160"
-						width="184"
+						width="201"
 						height="15"
 						key="textField-14"/>
 					<box></box>
@@ -348,15 +351,34 @@ Amount]]></text>
 					</textElement>
 				<text><![CDATA[MERCHANT ID:]]></text>
 				</staticText>
+				<staticText>
+					<reportElement
+						x="515"
+						y="188"
+						width="43"
+						height="27"
+						key="staticText-24"/>
+					<box leftPadding="2" rightPadding="2">					<pen lineWidth="0.5" lineStyle="Solid"/>
+					<topPen lineWidth="0.5" lineStyle="Solid"/>
+					<leftPen lineWidth="0.5" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.5" lineStyle="Solid"/>
+					<rightPen lineWidth="0.5" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Times New Roman" pdfFontName="Helvetica-Bold" size="9" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Billed
+Amount]]></text>
+				</staticText>
 			</band>
 			</groupHeader>
 			<groupFooter>
 			<band height="100"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="false" pattern="#,##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="414"
+						x="373"
 						y="0"
-						width="69"
+						width="75"
 						height="15"
 						key="textField-6"/>
 					<box rightPadding="2">					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -372,9 +394,9 @@ Amount]]></text>
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="#,##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="483"
+						x="447"
 						y="0"
-						width="57"
+						width="68"
 						height="15"
 						key="textField-7"/>
 					<box leftPadding="2" rightPadding="2">					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -390,9 +412,9 @@ Amount]]></text>
 				</textField>
 				<staticText>
 					<reportElement
-						x="350"
+						x="302"
 						y="0"
-						width="64"
+						width="71"
 						height="15"
 						key="staticText-12"/>
 					<box>					<topPen lineWidth="0.5" lineStyle="Solid"/>
@@ -407,7 +429,7 @@ Amount]]></text>
 					<reportElement
 						x="0"
 						y="0"
-						width="350"
+						width="302"
 						height="15"
 						key="textField-8"/>
 					<box leftPadding="2" rightPadding="2">					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -499,6 +521,24 @@ Amount]]></text>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{APPROVEDBYTITLE}]]></textFieldExpression>
 				</textField>
+				<textField isStretchWithOverflow="false" pattern="#,##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="515"
+						y="0"
+						width="43"
+						height="15"
+						key="textField-20"/>
+					<box leftPadding="2" rightPadding="2">					<pen lineWidth="0.5" lineStyle="Solid"/>
+					<topPen lineWidth="0.5" lineStyle="Solid"/>
+					<leftPen lineWidth="0.5" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.5" lineStyle="Solid"/>
+					<rightPen lineWidth="0.5" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Times New Roman" size="9"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.Number"><![CDATA[$V{webfee}]]></textFieldExpression>
+				</textField>
 			</band>
 			</groupFooter>
 		</group>
@@ -542,7 +582,7 @@ Amount]]></text>
 					<reportElement
 						x="114"
 						y="0"
-						width="92"
+						width="51"
 						height="14"
 						key="textField"/>
 					<box leftPadding="1" rightPadding="1">					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -558,7 +598,7 @@ Amount]]></text>
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="206"
+						x="165"
 						y="0"
 						width="208"
 						height="14"
@@ -576,9 +616,9 @@ Amount]]></text>
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="#,##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="414"
+						x="373"
 						y="0"
-						width="69"
+						width="75"
 						height="14"
 						key="textField"/>
 					<box rightPadding="2">					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -594,9 +634,9 @@ Amount]]></text>
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="#,##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="483"
+						x="447"
 						y="0"
-						width="57"
+						width="68"
 						height="14"
 						key="textField"/>
 					<box leftPadding="2" rightPadding="2">					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -609,6 +649,24 @@ Amount]]></text>
 						<font fontName="Times New Roman" size="9"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.Number"><![CDATA[$F{txnamount}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="#,##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="515"
+						y="0"
+						width="43"
+						height="14"
+						key="textField-19"/>
+					<box leftPadding="2" rightPadding="2">					<pen lineWidth="0.5" lineStyle="Solid"/>
+					<topPen lineWidth="0.5" lineStyle="Solid"/>
+					<leftPen lineWidth="0.5" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.5" lineStyle="Solid"/>
+					<rightPen lineWidth="0.5" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Times New Roman" size="9"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.Number"><![CDATA[$F{webfee}]]></textFieldExpression>
 				</textField>
 			</band>
 		</detail>
