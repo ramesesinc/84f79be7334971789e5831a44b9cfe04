@@ -256,7 +256,11 @@ class CloudPaymentService {
 
 	@ProxyMethod
 	public def getPaymentPartnerOptions( param ) {
-		return optionEm.find([ partnerid : param.partnerid ]).list(); 
+		def mm = [partnerid : param.partnerid]; 
+		if ( param.paypartnerid ) { 
+			mm.paypartnerid = param.paypartnerid; 
+		} 
+		return optionEm.find( mm ).list(); 
 	}
 
 	@ProxyMethod
