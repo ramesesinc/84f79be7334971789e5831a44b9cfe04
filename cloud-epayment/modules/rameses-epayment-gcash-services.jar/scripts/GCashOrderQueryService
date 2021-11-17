@@ -50,6 +50,9 @@ class GCashOrderQueryService {
 		if ( !partner.info )
 			throw new Exception(''+ po.orgcode +'_'+ m.paypartnerid +' paypartner info not found');
 
+		def prikey = partner.info.prikey;
+		def pubkey = partner.info.pubkey;
+
 		def wallet = partner.info.wallet; 
 		if ( !wallet ) throw new Exception('partner.info.wallet is required'); 
 		if ( !wallet.queryapi ) throw new Exception('partner.info.wallet.queryapi is required'); 
@@ -65,7 +68,7 @@ class GCashOrderQueryService {
 
 		data.request.body = createBody([ info: wallet?.body, preInfo: [ merchantTransId: po.objid ]]); 
 
-		data.signature = sigSvc.getSignature( data.request ); 
+		data.signature = sigSvc.getSignature( data.request, prikey ); 
 
 		queryapi.fullResult = ( param.fullResult.toString() == '1' ); 
 		return postData( queryapi, data, wallet?.headerpost ); 

@@ -13,17 +13,17 @@ import org.apache.commons.net.util.Base64;
 class GCashSignatureService {
 	
 	@ProxyMethod
-	public def getSignature( request ) {
+	public def getSignature( request, prikey ) {
 		if ( request instanceof String ) {
-			return signSHA256RSA( request ); 	
+			return signSHA256RSA( request, prikey ); 	
 		}
 		
 		def jsonData = JsonUtil.toString( request );
-		return signSHA256RSA( jsonData ); 
+		return signSHA256RSA( jsonData, prikey ); 
 	} 
 
 	@ProxyMethod
-	public def validateCheckout(checkout) {
+	public def validateCheckout( checkout, pubkey ) {
 		println '\nvalidateCheckout ============================= '
 		def response = checkout.response;
 		def resultInfo = response.body?.resultInfo; 
@@ -34,7 +34,7 @@ class GCashSignatureService {
 		def responseStr = JsonUtil.toString( response ); 
 		println 'responseStr -> '+ responseStr; 
 		println 'signature   -> '+ checkout.signature; 
-		boolean verified = verify( responseStr, checkout.signature ); 
+		boolean verified = verify( responseStr, checkout.signature, pubkey ); 
 		if ( !verified ) { 
 			throw new Exception('Signature cannot be verified using the public key');  
 		}  
@@ -42,8 +42,8 @@ class GCashSignatureService {
 	}
 
 
-    String signSHA256RSA( String plainText ) {
-    	String strpk = System.getenv("GCASH-PRI-KEY");
+    String signSHA256RSA( String plainText, String prikey ) {   	
+    	String strpk = ( prikey ? prikey : System.getenv("GCASH-PRI-KEY"));
     	if ( !strpk ) throw new Exception('GCASH-PRI-KEY system env not found'); 
 
         byte[] pk_bytes = Base64.decodeBase64( strpk ); 
@@ -59,11 +59,11 @@ class GCashSignatureService {
 		return encstr.replaceAll("\\s{1,}",""); 
     }  
 
-    boolean verify( String plainText, String signature ) {
+    boolean verify( String plainText, String signature, String pubkey ) {
     	byte[] bytes = plainText.getBytes("UTF-8"); 
     	byte[] sigBytes = Base64.decodeBase64( signature );
 
-		String strpk = System.getenv("GCASH-PUB-KEY");
+		String strpk = ( pubkey ? pubkey : System.getenv("GCASH-PUB-KEY"));
 		if ( !strpk ) throw new Exception('GCASH-PUB-KEY system env not found'); 
 
         byte[] keyBytes = Base64.decodeBase64( strpk );
