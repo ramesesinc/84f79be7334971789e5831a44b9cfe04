@@ -89,7 +89,7 @@
 					<reportElement
 						x="114"
 						y="188"
-						width="54"
+						width="63"
 						height="27"
 						key="staticText-7"/>
 					<box>					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -105,7 +105,7 @@
 				</staticText>
 				<staticText>
 					<reportElement
-						x="167"
+						x="177"
 						y="188"
 						width="210"
 						height="27"
@@ -123,9 +123,9 @@
 				</staticText>
 				<staticText>
 					<reportElement
-						x="377"
+						x="387"
 						y="188"
-						width="76"
+						width="66"
 						height="27"
 						key="staticText-10"/>
 					<box>					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -376,9 +376,9 @@ Amount]]></text>
 			<band height="100"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="false" pattern="#,##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="377"
+						x="387"
 						y="0"
-						width="76"
+						width="66"
 						height="15"
 						key="textField-6"/>
 					<box rightPadding="2">					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -412,7 +412,7 @@ Amount]]></text>
 				</textField>
 				<staticText>
 					<reportElement
-						x="302"
+						x="312"
 						y="0"
 						width="75"
 						height="15"
@@ -429,7 +429,7 @@ Amount]]></text>
 					<reportElement
 						x="0"
 						y="0"
-						width="302"
+						width="312"
 						height="15"
 						key="textField-8"/>
 					<box leftPadding="2" rightPadding="2">					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -582,7 +582,7 @@ Amount]]></text>
 					<reportElement
 						x="114"
 						y="0"
-						width="54"
+						width="63"
 						height="14"
 						key="textField"/>
 					<box>					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -598,7 +598,7 @@ Amount]]></text>
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="167"
+						x="177"
 						y="0"
 						width="210"
 						height="14"
@@ -616,9 +616,9 @@ Amount]]></text>
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="#,##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="377"
+						x="387"
 						y="0"
-						width="76"
+						width="66"
 						height="14"
 						key="textField"/>
 					<box rightPadding="2">					<pen lineWidth="0.5" lineStyle="Solid"/>
