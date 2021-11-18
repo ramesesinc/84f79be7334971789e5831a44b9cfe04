@@ -75,6 +75,9 @@ class GcashPaymentPartnerOptionInterceptor {
 			println '> '+ it; 
 		}
 
+		def prikey = partner.info.prikey; 
+		def pubkey = partner.info.pubkey; 
+
 		def params = [ request: [:] ];
 
 		params.request.head = partner.info.wallet.head;
@@ -85,7 +88,7 @@ class GcashPaymentPartnerOptionInterceptor {
 		params.request.body.notificationUrls = getNotificationUrls(partner, po);
 		params.request.body.order = getOrder(partner, po, checkout);
 
-		params.signature = signSvc.getSignature(params.request);
+		params.signature = signSvc.getSignature(params.request, prikey );
 		logH('buildPaymentPartnerOption: (params) ===='); 
 		params.each{ 
 			println '> '+ it; 
@@ -134,12 +137,14 @@ class GcashPaymentPartnerOptionInterceptor {
 		def paypartnerid = args.paypartnerid; 
 		def partner = em_partner_option.find([ partnerid: orgcode.toString() ]).where('paypartner.objid = :paypartnerid', [paypartnerid: paypartnerid]).first(); 
 		def wallet = partner?.info?.wallet; 
+		def prikey = partner?.info?.prikey;
+		def pubkey = partner?.info?.pubkey;
 
 		if ( !po?.objid ) {
 			// PO not found 
 			def statInfo =  [ resultStatus: 'U', resultCodeId: '00000900', resultCode: 'SYSTEM_ERROR', resultMsg: 'PAYMENT_ORDER_NOT_FOUND' ]; 
 			def response = buildWebhookResponse( wallet, data_req_head, statInfo ); 
-			result.response = [ response: response, signature: signSvc.getSignature( response )]; 
+			result.response = [ response: response, signature: signSvc.getSignature( response, prikey )]; 
 			result.status = 200; 
 			return; 
 		}
@@ -158,7 +163,7 @@ class GcashPaymentPartnerOptionInterceptor {
 				logH('afterPostPartnerWebhook: paymentrefid = '+ po?.objid +', resultInfo = '+ resultInfo); 
 
 				def response = buildWebhookResponse( wallet, data_req_head, resultInfo ); 
-				result.response = [ response: response, signature: signSvc.getSignature( response )]; 
+				result.response = [ response: response, signature: signSvc.getSignature( response, prikey )]; 
 				result.status = 200; 
 				return; 
 			} 
@@ -199,7 +204,7 @@ class GcashPaymentPartnerOptionInterceptor {
 		data_req_head.po = po; 
 
 		def response = buildWebhookResponse( wallet, data_req_head, statusInfo ); 
-		result.response = [ response: response, signature: signSvc.getSignature( response )]; 
+		result.response = [ response: response, signature: signSvc.getSignature( response, prikey )]; 
 		result.status = 200; 
 	}
 
@@ -292,7 +297,8 @@ class GcashPaymentPartnerOptionInterceptor {
 		if ( retval.responsecode == 200 ) {
 			partner.checkout = JsonUtil.toMap( jsonres ); 
 
-			def resp = signSvc.validateCheckout( partner.checkout ); 
+			def pubkey = partner?.info?.pubkey;
+			def resp = signSvc.validateCheckout( partner.checkout, pubkey ); 
 			def transactionId = resp.body.transactionId; 
 
 			partner.checkout.redirectUrl = resp.body.checkoutUrl; 
