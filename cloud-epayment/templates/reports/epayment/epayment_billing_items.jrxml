@@ -89,7 +89,7 @@
 					<reportElement
 						x="114"
 						y="188"
-						width="51"
+						width="63"
 						height="27"
 						key="staticText-7"/>
 					<box>					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -105,9 +105,9 @@
 				</staticText>
 				<staticText>
 					<reportElement
-						x="165"
+						x="177"
 						y="188"
-						width="208"
+						width="210"
 						height="27"
 						key="staticText-8"/>
 					<box>					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -123,9 +123,9 @@
 				</staticText>
 				<staticText>
 					<reportElement
-						x="373"
+						x="387"
 						y="188"
-						width="75"
+						width="66"
 						height="27"
 						key="staticText-10"/>
 					<box>					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -141,9 +141,9 @@
 				</staticText>
 				<staticText>
 					<reportElement
-						x="447"
+						x="453"
 						y="188"
-						width="68"
+						width="62"
 						height="27"
 						key="staticText-11"/>
 					<box>					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -376,9 +376,9 @@ Amount]]></text>
 			<band height="100"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="false" pattern="#,##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="373"
+						x="387"
 						y="0"
-						width="75"
+						width="66"
 						height="15"
 						key="textField-6"/>
 					<box rightPadding="2">					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -394,9 +394,9 @@ Amount]]></text>
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="#,##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="447"
+						x="453"
 						y="0"
-						width="68"
+						width="62"
 						height="15"
 						key="textField-7"/>
 					<box leftPadding="2" rightPadding="2">					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -412,9 +412,9 @@ Amount]]></text>
 				</textField>
 				<staticText>
 					<reportElement
-						x="302"
+						x="312"
 						y="0"
-						width="71"
+						width="75"
 						height="15"
 						key="staticText-12"/>
 					<box>					<topPen lineWidth="0.5" lineStyle="Solid"/>
@@ -429,7 +429,7 @@ Amount]]></text>
 					<reportElement
 						x="0"
 						y="0"
-						width="302"
+						width="312"
 						height="15"
 						key="textField-8"/>
 					<box leftPadding="2" rightPadding="2">					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -582,10 +582,10 @@ Amount]]></text>
 					<reportElement
 						x="114"
 						y="0"
-						width="51"
+						width="63"
 						height="14"
 						key="textField"/>
-					<box leftPadding="1" rightPadding="1">					<pen lineWidth="0.5" lineStyle="Solid"/>
+					<box>					<pen lineWidth="0.5" lineStyle="Solid"/>
 					<topPen lineWidth="0.5" lineStyle="Solid"/>
 					<leftPen lineWidth="0.5" lineStyle="Solid"/>
 					<bottomPen lineWidth="0.5" lineStyle="Solid"/>
@@ -598,9 +598,9 @@ Amount]]></text>
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="165"
+						x="177"
 						y="0"
-						width="208"
+						width="210"
 						height="14"
 						key="textField"/>
 					<box leftPadding="2" rightPadding="2">					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -616,9 +616,9 @@ Amount]]></text>
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="#,##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="373"
+						x="387"
 						y="0"
-						width="75"
+						width="66"
 						height="14"
 						key="textField"/>
 					<box rightPadding="2">					<pen lineWidth="0.5" lineStyle="Solid"/>
@@ -634,9 +634,9 @@ Amount]]></text>
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="#,##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="447"
+						x="453"
 						y="0"
-						width="68"
+						width="62"
 						height="14"
 						key="textField"/>
 					<box leftPadding="2" rightPadding="2">					<pen lineWidth="0.5" lineStyle="Solid"/>
