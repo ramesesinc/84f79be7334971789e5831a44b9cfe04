@@ -2,7 +2,7 @@ version: "3"
 
 services:
   cloud-filipizen-server:
-    image: ramesesinc/cloud-filipizen-server:beta.07
+    image: ramesesinc/cloud-filipizen-server:beta.08
     container_name: cloud-filipizen-server
     restart: always
     logging:
