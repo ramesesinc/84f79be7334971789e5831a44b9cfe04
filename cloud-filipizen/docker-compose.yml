@@ -17,5 +17,6 @@ services:
     volumes:
       - ../_custom:/apps/server/_res
       - ./assets:/apps/server/public/assets
+      - ./attachments:/apps/server/public/attachments
       - ./connections:/apps/server/connections
       - ./client:/apps/server/client
