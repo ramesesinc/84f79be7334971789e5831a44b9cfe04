@@ -2,7 +2,7 @@ version: "3"
 
 services:
   cloud-filipizen-server:
-    image: ramesesinc/cloud-filipizen-server:beta.07
+    image: ramesesinc/cloud-filipizen-server:beta.09
     container_name: cloud-filipizen-server
     restart: always
     logging:
@@ -17,5 +17,6 @@ services:
     volumes:
       - ../_custom:/apps/server/_res
       - ./assets:/apps/server/public/assets
+      - ./attachments:/apps/server/public/attachments
       - ./connections:/apps/server/connections
       - ./client:/apps/server/client
