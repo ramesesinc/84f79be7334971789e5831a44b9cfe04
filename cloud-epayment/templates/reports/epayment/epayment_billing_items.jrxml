@@ -251,12 +251,12 @@ Amount]]></text>
 					<reportElement
 						x="69"
 						y="145"
-						width="205"
+						width="163"
 						height="15"
 						key="textField-11"/>
 					<box></box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Times New Roman" pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+						<font fontName="Times New Roman" pdfFontName="Helvetica-Bold" size="9" isBold="true"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PAYPARTNER}]]></textFieldExpression>
 				</textField>
@@ -269,7 +269,7 @@ Amount]]></text>
 						key="staticText-18"/>
 					<box></box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Times New Roman" size="10"/>
+						<font fontName="Times New Roman" size="9"/>
 					</textElement>
 				<text><![CDATA[BILL TO:]]></text>
 				</staticText>
@@ -277,12 +277,12 @@ Amount]]></text>
 					<reportElement
 						x="69"
 						y="160"
-						width="205"
+						width="163"
 						height="15"
 						key="textField-12"/>
 					<box></box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Times New Roman" pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+						<font fontName="Times New Roman" pdfFontName="Helvetica-Bold" size="9" isBold="true"/>
 					</textElement>
 				<textFieldExpression   class="java.util.Date"><![CDATA[$P{BILLDATE}]]></textFieldExpression>
 				</textField>
@@ -295,15 +295,15 @@ Amount]]></text>
 						key="staticText-19"/>
 					<box></box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Times New Roman" size="10"/>
+						<font fontName="Times New Roman" size="9"/>
 					</textElement>
 				<text><![CDATA[BILL DATE:]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="false" pattern="MMMMM dd, yyyy" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="355"
+						x="314"
 						y="145"
-						width="201"
+						width="242"
 						height="15"
 						key="textField-13"/>
 					<box></box>
@@ -314,22 +314,22 @@ Amount]]></text>
 				</textField>
 				<staticText>
 					<reportElement
-						x="273"
+						x="232"
 						y="145"
 						width="82"
 						height="15"
 						key="staticText-20"/>
 					<box></box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Times New Roman" size="10"/>
+						<font fontName="Times New Roman" size="9"/>
 					</textElement>
 				<text><![CDATA[MERCHANT:]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="false" pattern="MMMMM dd, yyyy" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="355"
+						x="314"
 						y="160"
-						width="201"
+						width="242"
 						height="15"
 						key="textField-14"/>
 					<box></box>
@@ -340,14 +340,14 @@ Amount]]></text>
 				</textField>
 				<staticText>
 					<reportElement
-						x="273"
+						x="232"
 						y="160"
 						width="82"
 						height="15"
 						key="staticText-21"/>
 					<box></box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Times New Roman" size="10"/>
+						<font fontName="Times New Roman" size="9"/>
 					</textElement>
 				<text><![CDATA[MERCHANT ID:]]></text>
 				</staticText>
@@ -388,7 +388,7 @@ Amount]]></text>
 					<rightPen lineWidth="0.5" lineStyle="Solid"/>
 </box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Times New Roman" size="9"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.Number"><![CDATA[$V{amount}]]></textFieldExpression>
 				</textField>
@@ -406,7 +406,7 @@ Amount]]></text>
 					<rightPen lineWidth="0.5" lineStyle="Solid"/>
 </box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Times New Roman" size="9"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.Number"><![CDATA[$V{txnamount}]]></textFieldExpression>
 				</textField>
@@ -421,7 +421,7 @@ Amount]]></text>
 					<bottomPen lineWidth="0.5" lineStyle="Solid"/>
 </box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Times New Roman" size="9"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 				<text><![CDATA[Grand Totals:]]></text>
 				</staticText>
@@ -439,7 +439,7 @@ Amount]]></text>
 					<rightPen lineWidth="0.0" lineStyle="Solid"/>
 </box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Times New Roman" size="9"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA["Number of transactions: " + new DecimalFormat("#,##0").format($V{count})]]></textFieldExpression>
 				</textField>
@@ -535,7 +535,7 @@ Amount]]></text>
 					<rightPen lineWidth="0.5" lineStyle="Solid"/>
 </box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Times New Roman" size="9"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.Number"><![CDATA[$V{webfee}]]></textFieldExpression>
 				</textField>
@@ -574,7 +574,7 @@ Amount]]></text>
 					<rightPen lineWidth="0.5" lineStyle="Solid"/>
 </box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Times New Roman" size="9"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{paymentrefid}]]></textFieldExpression>
 				</textField>
@@ -592,7 +592,7 @@ Amount]]></text>
 					<rightPen lineWidth="0.5" lineStyle="Solid"/>
 </box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Times New Roman" size="9"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 				<textFieldExpression   class="java.util.Date"><![CDATA[$F{tracedate}]]></textFieldExpression>
 				</textField>
@@ -628,7 +628,7 @@ Amount]]></text>
 					<rightPen lineWidth="0.5" lineStyle="Solid"/>
 </box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Times New Roman" size="9"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.Number"><![CDATA[$F{amount}]]></textFieldExpression>
 				</textField>
@@ -646,7 +646,7 @@ Amount]]></text>
 					<rightPen lineWidth="0.5" lineStyle="Solid"/>
 </box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Times New Roman" size="9"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.Number"><![CDATA[$F{txnamount}]]></textFieldExpression>
 				</textField>
@@ -664,7 +664,7 @@ Amount]]></text>
 					<rightPen lineWidth="0.5" lineStyle="Solid"/>
 </box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="Times New Roman" size="9"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.Number"><![CDATA[$F{webfee}]]></textFieldExpression>
 				</textField>
