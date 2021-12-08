@@ -1,0 +1,7 @@
+<schema>
+	<element tablename="online_psic_division">
+		<field name="objid" primary="true" />
+		<field name="name" />
+		<field name="description" />
+	</element> 
+</schema> 

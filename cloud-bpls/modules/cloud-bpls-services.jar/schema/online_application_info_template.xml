@@ -1,0 +1,13 @@
+<schema>
+	<element tablename="online_application_info_template">
+		<field name="objid" primary="true" />
+		<field name="assessmenttype" />
+		<field name="name" />
+		<field name="caption" />
+		<field name="perlob" />
+		<field name="category" />
+		<field name="sortorder" />
+		<field name="datatype" />
+		<field name="handler" />		
+	</element> 
+</schema> 

@@ -1,0 +1,9 @@
+<schema>
+	<element tablename="online_psic_subclass">
+		<field name="objid" primary="true" />
+		<field name="parentid" />
+		<field name="code" />
+		<field name="name" />
+		<field name="description" />
+	</element> 
+</schema> 

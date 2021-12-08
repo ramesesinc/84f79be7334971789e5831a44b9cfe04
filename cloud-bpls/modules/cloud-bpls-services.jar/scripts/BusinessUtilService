@@ -1,0 +1,40 @@
+import com.rameses.annotations.*;
+import com.rameses.util.KeyGen; 
+
+class BusinessUtilService 
+{
+
+	@ProxyMethod
+	public def generateKey() {
+		def arrs = KeyGen.generateIntKey(null, 8).split('-'); 
+		def str = (arrs.length > 1 ? arrs[1] : arrs[0]); 
+		def key = str.padLeft(6, '0').toString().substring(0, 6); 
+		return key;
+	}
+
+	@ProxyMethod
+	public def createToken(refno) { 
+		def key = generateKey();
+		def md5 = new com.rameses.util.Encoder.MD5Encoder(); 
+		return md5.encode(refno.toString() + key.toString()) +'-'+ key.toString(); 
+	}
+
+	@ProxyMethod
+	public def validateToken(refno, tokenid) {
+		def arrs = tokenid.toString().split('-'); 
+		if ( arrs.length < 2 ) throw new Exception('Invalid tokenid'); 
+
+		def key = arrs[1]; 
+		def md5 = new com.rameses.util.Encoder.MD5Encoder(); 
+		def encstr = md5.encode(refno.toString() + key) +'-'+ key; 
+		if ( !encstr.equals( tokenid)) throw new Exception('Invalid tokenid'); 
+		return key; 
+	} 
+
+	@ProxyMethod
+	public void required(field, value) {
+		if ( !value ) {
+			throw new Exception(field + ' parameter is required'); 
+		} 
+	}
+} 

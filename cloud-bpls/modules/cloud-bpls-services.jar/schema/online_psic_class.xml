@@ -1,0 +1,15 @@
+<schema>
+	<element tablename="online_psic_class">
+		<field name="objid" primary="true" />
+		<field name="parentid" />
+		<field name="code" />
+		<field name="name" />
+		<field name="description" />
+		<complex name="group" ref="online_psic_group" jointype="many-to-one">
+			<key field="parentid" target="objid" />
+		</complex>
+		<complex name="division" ref="online_psic_division" jointype="many-to-one">
+			<key field="group.parentid" target="objid" />
+		</complex>
+	</element> 
+</schema> 

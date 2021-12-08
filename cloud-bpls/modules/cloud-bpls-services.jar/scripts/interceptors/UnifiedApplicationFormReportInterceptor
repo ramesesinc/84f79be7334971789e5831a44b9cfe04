@@ -1,0 +1,19 @@
+import com.rameses.annotations.*;
+
+class UnifiedApplicationFormReportInterceptor {
+
+	@Service('OnlineBusinessService')
+	def svc;
+
+	@After( pattern="FormReportService.getData", eval="#{args[0].reportid.matches('unified_application_form') }" )
+	public def getData( evt ) {
+		def req = evt.args[0];
+		def result = evt.result;
+		def reportid =  req.reportid;
+		def refid = req.parameters.objid;
+
+		def app = svc.findApp([objid: refid]);
+		app.template = "reports/bpls/" + reportid;
+		result.data = app;
+	}
+}

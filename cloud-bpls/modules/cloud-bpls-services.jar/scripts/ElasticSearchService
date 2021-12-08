@@ -1,0 +1,62 @@
+import com.rameses.annotations.*;
+import com.rameses.util.*;
+import com.rameses.http.*;
+import com.rameses.osiris3.server.*;
+
+class ElasticSearchService 
+{
+	@XConnection("elastic")
+	def xconn;
+
+	@ProxyMethod
+	public def get(param) {
+		def debug = xconn.conf.debug;
+		def host = xconn.conf.host;
+		if (!host) throw new Exception('"host" must be specified in elastic connection');
+
+		def port = xconn.conf.port; 
+		if (port) {
+			def tokens = host.split(':');
+			host = tokens[0] + ":" + port;
+		}
+		
+		required('indexname', param.indexname);
+		required('query', param.query);
+		
+		def httpClient = new BasicHttpClient();
+		httpClient.setContentType("application/json");
+		
+		def query = JsonUtil.toString(param.query);
+		def url = "http://" + host + "/" + param.indexname+ "/_search";
+
+		if (isTrue(debug)) {
+			println 'elastic host: ' + host;
+			println 'index name  : ' + param.indexname;
+			println 'query       : ' + param.query;
+			println 'url         : ' + url;
+			println 'query       : ' + query;
+		}
+
+		def result = httpClient.get(url, query);
+		return JsonUtil.toMap(result.data);
+	}
+
+	@ProxyMethod
+	public def getHits(param) {
+		def data = get(param);
+		if (data && data.hits && data.hits.hits) {
+			return [total: data.hits.total, hits: data.hits.hits];
+		} 
+		return [total: [value: 0, relation: "eq"], hits: []];
+
+	}
+
+	def isTrue(val) {
+		if (!val) return false;
+		return val.toString().toLowerCase().matches("1|true|t|y|yes");
+	}
+
+	def required(caption, value) {
+		if (!value) throw new Exception(caption + ' must be specified');
+	}
+} 

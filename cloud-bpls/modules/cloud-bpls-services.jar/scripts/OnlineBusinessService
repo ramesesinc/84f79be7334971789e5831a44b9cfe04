@@ -1,0 +1,247 @@
+import com.rameses.annotations.*;
+import com.rameses.util.KeyGen; 
+
+class OnlineBusinessService 
+{
+	@Service('DateService')
+	def dtSvc;
+
+	@Service('BusinessUtilService')
+	def util;
+
+	@DataContext('online_business_application')
+	def em_app;
+
+	@DataContext('online_business_application_entity')
+	def em_applicant;
+
+	@DataContext('online_business_application_location')
+	def em_location;
+
+	@DataContext('online_application_info_template')
+	def em_info_template;
+
+	def STATE_DRAFT = 'DRAFT';
+	def STATE_PENDING = 'PENDING';
+
+	@ProxyMethod
+	public def validateInitialInfo(param) {
+		def findby = [:];
+		findby.businessname = param.businessname;
+		if ('BRANCH'.equalsIgnoreCase(param.officetype)) {
+			findby.officetype = 'BRANCH';
+			findby.branch = param.branch;
+		}
+		def app = em_app.select('objid').find(findby).first();
+		if (app) {
+			throw new Exception('Business Name has already been registered.');
+		}
+
+		param.tokenid = util.createToken(param.businessname);
+		return param;
+	}	
+
+	@ProxyMethod
+	public def create(param) {
+		util.required('orgcode', param.orgcode);
+		util.required('tokenid', param.tokenid);
+		util.required('businessname', param.businessname);
+		util.required('apptype', param.apptype);
+		util.required('officetype', param.officetype);
+		if ('BRANCH'.equalsIgnoreCase(param.officetype)) {
+			util.required('branch', param.branch);
+		}
+		util.required('partner.name', param.partner?.name);
+		util.required('partner.group.name', param.partner?.group?.name);
+		util.required('contact.email', param.contact?.email);
+
+		def tokenkey = param.apptype == 'NEW' ? param.businessname : param.businessid;
+		util.validateToken(tokenkey, param.tokenid); 
+		
+		def app = [:]
+		app.requirements = []; 
+		app.info = [:];
+		app.lobs = []; 
+		app.infos = []; 
+		app.attachments = []; 
+		app.registration = [:];
+
+		app.putAll(param);
+
+		app.state = STATE_DRAFT;
+		app.dtcreated = dtSvc.serverDate;
+		app.controlno = KeyGen.generateAlphanumKey( 'B-'+ param.orgcode +'-', 12 ); 
+		app.business = [objid: app.businessid];
+		app.appyear = dtSvc.serverYear;
+		app.apptype = param.apptype;
+		app.appdate = app.dtcreated;
+		app.step = 2;
+		app.partnername = [ param.partner.group.name, param.partner.name ].join('_'); 
+		app.prevapplicationid = app.prevapp?.objid;
+		app.createdby = (param.user ? param.user : [:]); 
+  		if (!app.businessaddress) app.businessaddress = '';
+		if (!app.createdby.objid) app.createdby.objid = 'filipizen'; 
+  		if (!app.createdby.name) app.createdby.name = 'filipizen'; 
+		if (!app.owner) app.owner = [:];
+		if (!app.prevapp) app.prevapp = [:];
+		  
+		app = em_app.create(app);
+		if (app.owner?.objid) saveEntity(app);
+		if (app.address?.objid) saveBusinessAddress(app);
+		return app;
+	}
+
+	@ProxyMethod
+	public def findApp(param) {
+		def app = [:];
+		if (param.objid) {
+			app = em_app.find([objid: param.objid]).first();
+			if (!app) throw new Exception('Application does not exist.');
+		} else {
+			app = em_app.find([controlno: param.controlno]).first();
+			if (!app) throw new Exception('Tracking no. does not exist.');
+		}
+		app.tokenid = util.createToken(app.objid);
+		if (!app.infos) app.infos = [];
+		if (!app.lobs) app.lobs = [];
+		app.applicant = getApplicant(app);
+		app.location = getLocation(app);
+		return app;
+	}
+
+	@ProxyMethod
+	public def open(app) {
+		app = em_app.find([objid: app.objid]).first();
+		if (!app) throw new Exception('Application does not exist or has already been deleted.')
+		app.tokenid = util.createToken(app.objid);
+		return app;
+	}
+
+	@ProxyMethod
+	public def update(app) {
+		return em_app.find([objid: app.objid]).update(app);
+	}
+
+	@ProxyMethod
+	public def getLobs(app) {
+		def info = em_app.select('lobs').find([objid: app.objid]).first();
+		return info.lobs ? info.lobs : []; 
+	}
+
+	@ProxyMethod
+	public def getApplicant(app) {
+		app = em_app.select('objid,orgtype').find([objid: app.objid]).first();
+		if (!app) throw new Exception('Application does not exist or has already been deleted.');
+		def applicant = em_applicant.find([appid: app.objid]).first();
+		if (!applicant) {
+			applicant = [isnew: true];
+			applicant.appid = app.objid;
+			applicant.id = [:];
+		} else {
+			applicant.isnew = false;
+		}
+		applicant.entitytype = app.orgtype == 'SING' ? 'INDIVIDUAL' : 'JURIDICAL';
+		return applicant;
+	}
+
+	@ProxyMethod
+	public def saveApplicant(applicant) {
+		util.required('appid', applicant.appid);
+		applicant = em_applicant.save(applicant);
+
+		def updatedApp = [:];
+		updatedApp.applicantid = applicant.objid;
+		if (applicant._step) {
+			em_app.find([objid: applicant.appid]).update([step: applicant._step]);
+		}
+		return applicant;
+	}
+
+	@ProxyMethod
+	public def getLocation(app) {
+		app = em_app.select('objid').find([objid: app.objid]).first();
+		if (!app) throw new Exception('Application does not exist or has already been deleted.');
+		
+		def location = em_location.find([appid: app.objid]).first();
+		if (!location) location = [appid: app.objid];
+		return location;
+	}
+
+	@ProxyMethod
+	public def saveLocation(location) {
+		util.required('appid', location.appid);
+		em_app.find([objid: location.appid]).update([attachments: location.attachments, step: location._step]);
+
+		if (!location.barangay) location.barangay = null;
+		return em_location.save(location);
+	}
+
+	@ProxyMethod
+	public def submit(app) {
+		def info = [:];
+		info.state = STATE_PENDING;
+		info.step = app.step;
+		em_app.find([objid: app.objid]).update(info);
+		return findApp(app);
+	}
+
+	@ProxyMethod
+	public def getAppInfos(param) {
+		def infos = em_app.select("infos").find([objid: param.objid]).val();
+		if (infos && infos.length > 0) return infos;
+		return getAppInfosFromTemplate(param); 
+	}
+
+	def getAppInfosFromTemplate(param) {
+		def infos = em_info_template.where("1=1").orderBy("sortorder").list();
+		def lobinfos = infos.findAll{it.perlob == 1 && isApplicableInfo(it, param)};
+		def establishmentinfos = infos.findAll{it.perlob != 1 && isApplicableInfo(it, param)};
+		
+		def appinfos = []
+		lobinfos.each{info -> 
+			param.lobs.each{lob -> 
+				def newinfo = [:];
+				newinfo.putAll(info);
+				newinfo.lob = [
+					objid: lob.objid,
+					name: lob.name,
+					code: lob.code,
+					dominant: lob.dominant,
+					assessmenttype: lob.assessmenttype,
+				];
+				appinfos << newinfo;
+			}
+		}
+		return establishmentinfos + appinfos;
+	}
+
+	def isApplicableInfo(info, param) {
+		if (!info.assessmenttype) return true;
+		return info.assessmenttype.equalsIgnoreCase(param.assessmenttype);
+	}
+
+	void saveEntity(app) {
+		def owner = app.owner;
+		def entity = [:];
+		entity.appid = app.objid;
+		entity.profileid = owner.objid;
+		entity.name = owner.name;
+		entity.address_text = owner.addres;
+		em_applicant.create(entity);
+	}
+
+	void saveBusinessAddress(app) {
+		def address = [:];
+		address.appid = app.objid;
+		address.type = app.address.type;
+		address.lessor_objid = app.address.lessor?.objid ;
+		address.lessor_name = app.address.lessor?.name;
+		address.lessor_address = app.address.lessor?.address?.text;
+		address.lessor_unitno = app.address.unitno;
+		address.bldgname = app.address.bldgname;
+		address.unitno = app.address.unitno;
+		address.street = app.address.street;
+		address.barangay = app.address.barangay;
+		em_location.create(address);
+	}
+} 

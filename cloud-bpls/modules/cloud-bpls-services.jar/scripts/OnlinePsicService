@@ -1,0 +1,62 @@
+import com.rameses.annotations.*;
+
+class OnlinePsicService 
+{
+	@Service('ElasticSearchService')
+	def elastic;
+
+	@ProxyMethod
+	public def getSubclasses(param) {
+		if (!param.searchtext) param.searchtext = '';
+		def query = [query: [:]];
+		def multimatch = [:];
+		multimatch.query = param.searchtext;
+		multimatch.fields = ['code^3', 'name^2', 'description'];
+		query.query.multi_match = multimatch;
+
+		param.indexname = 'psic';
+		param.query = query;
+
+		def result = elastic.getHits(param);
+		println 'result => ' + result
+		def lobs = [];
+		result.hits.each{ lobs << it._source }
+		println 'lobs => ' + lobs
+		return [total: result.total, lobs: lobs];
+	}
+	
+	@ProxyMethod
+	public def getSubclasses2(param) {
+		if (!param.searchtext) throw new Exception("searchtext must be specified");
+
+		def query = [query: [:]];
+		def bool = [:];
+		def tokens = param.searchtext.split(" ");
+		def shoulds = [];
+		tokens.each{token -> 
+			def name = [fuzzy: [:]];
+			name.fuzzy.name = [value: token, prefix_length: 2, fuzziness: 1];
+			shoulds << name;
+			
+			def desc = [fuzzy: [:]];
+			desc.fuzzy.description = [value: token, prefix_length: 2, fuzziness: 1];
+			shoulds << desc;
+
+			def code = [match: [:]];
+			code.match.code = token;
+			shoulds << code;
+		}
+
+		bool.should = shoulds;
+		query.query.bool = bool;
+
+		param.indexname = 'psic';
+		param.query = query;
+
+		return elastic.get(param);
+		def result = elastic.getHits(param);
+		def lobs = [];
+		result.hits.each{ lobs << it._source }
+		return [total: result.total, lobs: lobs];
+	}
+} 
