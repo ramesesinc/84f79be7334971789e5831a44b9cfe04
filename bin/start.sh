@@ -4,7 +4,7 @@ cd ..
 BASE_DIR=`pwd`
 
 ## start the system containers
-cd $BASE_DIR/nginx && docker-compose up -d
+cd $BASE_DIR/nginx && docker-compose -f docker-compose.yml -f docker-compose-private.yml up -d
 
 cd $BASE_DIR/rabbitmq && docker-compose up -d
 
