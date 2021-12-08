@@ -1,4 +1,5 @@
 {
 	title  : 'Retire/Close Business',
 	sortorder: 3,
+	hidden: true
 }

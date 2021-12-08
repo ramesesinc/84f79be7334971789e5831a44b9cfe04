@@ -1,3 +1,4 @@
 {
-	title: 'Search Property'
+	title: 'Search Property', 
+	hidden: true	
 }

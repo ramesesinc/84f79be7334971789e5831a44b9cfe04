@@ -18,7 +18,7 @@
 
 	this.submit = function() {
 		if(!confirm("You are about to submit this application. Proceed")) return;
-		var svc =  Service.lookup( app.orgcode + ":OboOnlineService" );
+		var svc =  Service.lookup( app.orgcode + ":OboOnlineService", "obo" );
 		app.moveNextStep();
 	}
 

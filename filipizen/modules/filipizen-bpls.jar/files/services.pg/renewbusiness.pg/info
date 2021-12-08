@@ -1,4 +1,5 @@
 {
 	title  : 'Business Renewal',
-	sortorder: 2,
+	sortorder: 2, 
+	hidden: true
 }

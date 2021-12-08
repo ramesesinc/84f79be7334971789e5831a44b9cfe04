@@ -27,7 +27,7 @@
   }
 
   this.findRefno = function() {
-    var svc = Service.lookup( app.orgcode + ":OboOnlineService" );
+    var svc = Service.lookup( app.orgcode + ":OboOnlineService", "obo");
     return svc.findProfessional( {refno: self.idno }, function(s,o) {
       if( s.status == "ERROR" ) {
         self.mode = "entry-not-found";

@@ -15,7 +15,7 @@
   this.appid = app.appid;
 
   this.findProperty = function() {
-    var svc = Service.lookup( app.orgcode + ":OboOnlineService" );
+    var svc = Service.lookup( app.orgcode + ":OboOnlineService", "obo" );
     return svc.findLocation( {refno: self.refno}, function(s,o) {
       if( s.status == "ERROR" ) {
         alert("Error " + s.msg);
