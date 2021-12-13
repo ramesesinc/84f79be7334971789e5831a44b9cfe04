@@ -19,7 +19,7 @@
  
 
 	this.findApplicant = function(){
-		var profileSvc = Service.lookup( app.orgcode + ':RemoteEntityProfileService' );
+		var profileSvc = Service.lookup( app.orgcode + ':RemoteEntityProfileService', "entity" );
 		var p = {idno: self.idno };
 		return profileSvc.findByIdno( p, function(s,o) {
 	      if( s.status == "ERROR" ) {

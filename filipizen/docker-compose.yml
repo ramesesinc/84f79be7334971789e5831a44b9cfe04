@@ -21,3 +21,4 @@ services:
     volumes:
       - ./modules:/apps/server/modules
       - ./webroot:/apps/server/webroot
+      - ./js/rameses-remote-proxy.js:/apps/server/lib/anubis.lib/default/js/lib/rameses-remote-proxy.js

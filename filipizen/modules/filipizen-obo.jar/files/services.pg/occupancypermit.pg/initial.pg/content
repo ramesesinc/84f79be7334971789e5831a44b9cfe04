@@ -11,7 +11,7 @@
 		var self = this;
 		this.mode = "initial";
 		var app = \$get("app").code;
-		var svc = Service.lookup( app.orgcode + ":RemoteOccupancyPermitService" );
+		var svc = Service.lookup( app.orgcode + ":RemoteOccupancyPermitService", "obo" );
 		
 		this.orgname = app.orgname;
 		this.appno;

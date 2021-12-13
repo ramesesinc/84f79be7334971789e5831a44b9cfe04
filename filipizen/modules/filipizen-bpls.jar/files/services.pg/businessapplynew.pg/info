@@ -2,5 +2,6 @@
 	title  : 'Apply New Business',
 	menu: 'Apply for New Permit',
 	sortorder: 1,
-	active:'not'
+	active:'not',
+	hidden: true	
 }

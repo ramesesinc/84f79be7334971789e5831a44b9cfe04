@@ -1,4 +1,5 @@
 {
 	title  : 'Amend Business',
 	sortorder: 3,
+	hidden: true
 }

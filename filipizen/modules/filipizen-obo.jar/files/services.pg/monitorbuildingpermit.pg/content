@@ -39,7 +39,7 @@
 		this.lgu = {title:"${PARAMS.info.title}", group: "${PARAMS.info.group.title}"};
 
 		this.loadBill = function() {
-			var svc = Service.lookup(self.orgcode + ":EPaymentService");
+			var svc = Service.lookup(self.orgcode + ":EPaymentService", "epayment");
 			var params = {refno: this.refno, txntype: 'building_permit'};
 			return svc.getBilling( params, function(s,o) {
 				if( s.status == "ERROR" ) {
@@ -82,7 +82,7 @@
 		    pp.orgcode = self.orgcode;
 		    pp.origin = "filipizen";
 		    pp.txntype = self.bill.txntype;
-		    var pmtSvc = Service.lookup(self.orgcode + ":EPaymentService");
+		    var pmtSvc = Service.lookup(self.orgcode + ":EPaymentService", "epayment");
 		    return pmtSvc.createPaymentOrder( pp, function(s,o) {
 		        if( s.status == "ERROR" ) {
 		          alert("error " + o.msg );

@@ -1,6 +1,6 @@
 provider=script
-app.host=${app_server_ip}:10001
-app.cluster=osiris3
-app.context=enterprise
+app.host=${obo_server_ip}
+app.cluster=cloud-server
+app.context=obo
 readTimeout=60000
 debug=true

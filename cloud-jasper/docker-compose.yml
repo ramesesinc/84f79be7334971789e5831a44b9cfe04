@@ -22,9 +22,9 @@ services:
       - ./connections:/apps/enterprise/connections
       - ./modules:/apps/enterprise/modules
       - ./templates:/apps/server/templates
+      - ./output:/apps/server/output
 
-      - ../_custom/output:/apps/server/output
-      - ../_custom/reports:/apps/server/custom
+      - ../_custom/jasper:/apps/server/custom
 
 
   jasper-node-server:
@@ -45,5 +45,6 @@ services:
       - "5005:5000"
     volumes:
       - ./connections/node:/apps/server/connections
+      - ./output:/apps/server/reports
+
       - ../_custom/env.conf:/apps/server/_custom/env.conf
-      - ../_custom/output:/apps/server/reports
