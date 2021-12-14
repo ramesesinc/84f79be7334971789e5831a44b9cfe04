@@ -2,7 +2,7 @@ version: "3"
 
 services:
   cloud-fileserver:
-    image: ramesesinc/cloud-fileserver:0.2.0
+    image: ramesesinc/cloud-fileserver:0.3
     container_name: cloud-fileserver
     restart: always
     logging:
