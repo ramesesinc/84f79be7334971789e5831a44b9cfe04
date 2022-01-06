@@ -14,6 +14,12 @@ server {
         proxy_pass http://${app_server_ip}:5000;
     }
 
+    location ~* ^/assets/ {
+        expires 1d;
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:5000;
+    }
+
     location ~* ^/payoptions {
         rewrite ^/(.*)$  /filipizen/$1 last;
     }
@@ -34,12 +40,36 @@ server {
 
 
     ## 
+    ## S3 routing
+    ## 
+    location ~* ^/s3/uploads-89aec797-f5e4-4778-b4a0-3a324906ef50.s3.us-west-2.amazonaws.com/ {
+        proxy_http_version     1.1;
+        proxy_redirect         off;
+        proxy_set_header       Connection "";
+        proxy_set_header       Authorization '';
+        proxy_set_header       Host uploads-89aec797-f5e4-4778-b4a0-3a324906ef50.s3.us-west-2.amazonaws.com;
+        proxy_set_header       X-Real-IP $remote_addr;
+        proxy_set_header       X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_hide_header      x-amz-id-2;
+        proxy_hide_header      x-amz-request-id;
+        proxy_hide_header      x-amz-meta-server-side-encryption;
+        proxy_hide_header      x-amz-server-side-encryption;
+        proxy_hide_header      Set-Cookie;
+        proxy_ignore_headers   Set-Cookie;
+        proxy_intercept_errors on;
+        add_header             Cache-Control max-age=31536000;
+        rewrite ^/s3/uploads-89aec797-f5e4-4778-b4a0-3a324906ef50.s3.us-west-2.amazonaws.com/(.*)$ /$1 break; 
+        proxy_pass https://uploads-89aec797-f5e4-4778-b4a0-3a324906ef50.s3.us-west-2.amazonaws.com;
+    }
+
+
+    ## 
     ## attachment 
     ## 
     location /filipizen/attachment/upload {
         include conf.d/proxy.conf;
         proxy_pass http://${app_server_ip}:5000/filipizen/attachment/upload;
-    }
+    } 
 
     location /filipizen/attachment/download {
         include conf.d/proxy.conf;
@@ -54,6 +84,26 @@ server {
     location /filipizen/attachment/list {
         include conf.d/proxy.conf;
         proxy_pass http://${app_server_ip}:5000/filipizen/attachment/list$is_args$args;
+    }
+
+
+    ##
+    ## FILIPIZEN FILESERVER ROUTING
+    ##
+    location /filipizen/fileserver/upload {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:7000/fileserver/upload;
+    }
+
+    location /filipizen/fileserver/download {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:7000/fileserver/download$is_args$args;
+    }
+
+    location /filipizen/fileserver/delete {
+        include conf.d/proxy.conf;
+        proxy_set_header content-type "application/json";
+        proxy_pass http://${app_server_ip}:7000/fileserver/delete$is_args$args;
     }
 
 
