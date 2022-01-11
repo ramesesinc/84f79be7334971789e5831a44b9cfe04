@@ -13,6 +13,7 @@ services:
         max-size: "10m"
     volumes:
       - ./data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
     expose: 
       - 6379
     ports:
