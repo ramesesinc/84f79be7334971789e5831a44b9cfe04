@@ -3,7 +3,7 @@ version: "3"
 services:
 
   cloud-partner-server:
-    image: "ramesesinc/cloud-partner-server:v003"
+    image: ramesesinc/cloud-partner-server:v003
     container_name: cloud-partner-server
     logging: 
       driver: "json-file"

@@ -3,7 +3,7 @@ version: "3"
 services:
 
   cloud-obo-server:
-    image: "ramesesinc/cloud-obo-server:v001"
+    image: ramesesinc/cloud-obo-server:v001
     container_name: cloud-obo-server
     restart: always
     logging: 

@@ -3,7 +3,7 @@ version: "3"
 services:
 
   cloud-gdx-node:
-    image: "ramesesinc/cloud-gdx-node:1.0.0"
+    image: ramesesinc/cloud-gdx-node:1.1.0
     container_name: cloud-gdx-node
     restart: always
     logging: 

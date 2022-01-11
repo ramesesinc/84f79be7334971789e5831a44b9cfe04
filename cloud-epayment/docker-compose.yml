@@ -3,7 +3,7 @@ version: "3"
 services:
 
   cloud-epayment-server:
-    image: "ramesesinc/cloud-epayment-server:v003"
+    image: ramesesinc/cloud-epayment-server:v003
     container_name: cloud-epayment-server
     restart: always
     logging: 
