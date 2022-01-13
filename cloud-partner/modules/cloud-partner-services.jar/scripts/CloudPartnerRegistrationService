@@ -5,8 +5,8 @@ class CloudPartnerRegistrationService {
     @DataContext("gdx_partner")
     def partner;	
 
-    @XConnection("redis-cache")
-    def cache;    	
+    // @XConnection("redis-cache")
+    // def cache;    	
 
     @XConnection("gdx-mq")
     def queueSvc;
@@ -26,14 +26,14 @@ class CloudPartnerRegistrationService {
             throw new Exception("register channel failed. Partner not found");
         if(p.state!='ACTIVE')
             throw new Exception("register channel failed. Partner " + param.id + " is not active");
-        cache.put(key, "0" );
+        // cache.put(key, "0" );
         return p;
     } 
 
     @ProxyMethod
     public def unregisterChannel( def param ) {
         def key = "partner:"+param.id;
-        cache.remove( key );
+        // cache.remove( key );
         return "OK";
     } 
 
