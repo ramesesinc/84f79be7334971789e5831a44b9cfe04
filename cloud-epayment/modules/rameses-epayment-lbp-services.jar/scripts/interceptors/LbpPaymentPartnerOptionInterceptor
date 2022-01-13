@@ -68,7 +68,7 @@ class LbpPaymentPartnerOptionInterceptor {
 		params.Particulars = parbuff.toString(); 
 
 		if ( partner.info?.particulars ) {
-			params.Particulars = evalExpr( partner.info.particulars, [ txntype: po.txntypename, paidby: paidbystr, refno: po.objid ]); 
+			params.Particulars = evalExpr( partner.info.particulars, [ txntype: txntypename, paidby: paidbystr, refno: po.objid ]); 
 		}
 
 		params.Amount = samt;

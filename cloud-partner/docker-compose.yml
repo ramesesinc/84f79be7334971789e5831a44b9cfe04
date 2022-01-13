@@ -3,7 +3,7 @@ version: "3"
 services:
 
   cloud-partner-server:
-    image: "ramesesinc/cloud-partner-server:v003"
+    image: ramesesinc/cloud-partner-server:v003
     container_name: cloud-partner-server
     logging: 
       driver: "json-file"
@@ -27,3 +27,4 @@ services:
       - ../_res/lib/rameses-main-bootloader.jar:/apps/server/lib/rameses-main-bootloader.jar
       - ../_res/lib/rameses-osiris3-core2.jar:/apps/server/lib/rameses-osiris3-core2.jar
       - ../_res/lib/rameses-osiris3-server.jar:/apps/server/lib/rameses-osiris3-server.jar
+      - ../_res/lib/rameses-redis-cache.jar:/apps/server/lib/rameses-redis-cache.jar
