@@ -1,0 +1,33 @@
+import com.rameses.annotations.*;
+
+class GdxNodePartnerRegistrationService {
+
+    @XConnection("gdx-node-service")
+    def nodeSvc;
+
+    @ProxyMethod
+    public void register( param ) {
+        def key = param?.id.toString();
+    	println 'gdx-node_register   -> '+ key;
+        nodeSvc.post("register", [ channel: key ]);
+    }
+
+    @ProxyMethod
+    public void unregister( param ) {
+        def key = param?.id.toString();
+    	println 'gdx-node_unregister -> '+ key;
+        nodeSvc.post("unregister", [ channel: key ]);
+    } 
+
+
+    @Async
+    @ProxyMethod
+    public void asyncRegister( param ) {
+        register( param ); 
+    }
+    @Async
+    @ProxyMethod
+    public void asyncUnregister( param ) {
+        unregister( param ); 
+    }
+}

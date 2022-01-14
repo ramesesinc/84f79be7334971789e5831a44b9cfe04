@@ -1,0 +1,22 @@
+import com.rameses.annotations.*;
+
+class RedisCloudPartnerInterceptor {
+
+	@Service('RedisPartnerService')
+	def svc; 
+
+	@After(pattern="CloudPartnerService.getList")
+	public void afterGetList( evt ) { 
+		evt.result.each{ o-> 
+			
+			def v = null; 
+
+			try { 
+				v = svc.getValue( o ); 
+			} 
+			catch(Throwable t) {;} 
+
+            o.isonline = (v.toString() == '1' ? v.toString() : '0'); 
+		} 
+	} 
+}

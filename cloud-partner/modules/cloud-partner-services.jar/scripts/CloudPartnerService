@@ -5,15 +5,12 @@ class CloudPartnerService {
     @DataContext("gdx_partner")
     def partner;		
    
-    @XConnection("redis-cache")
-    def cache; 
-
     @DataContext("barangay")
     def barangayEm; 
    
     @ProxyMethod
     public def getList() {
-		  return partner.getList();
+		return partner.getList();
     } 
 
     // updated
@@ -52,6 +49,4 @@ class CloudPartnerService {
     public def getBarangayList( def param ) {
         return barangayEm.find([parentid: param.orgcode]).select("objid,name").orderBy("name").list(); 
     } 
-
-
 }

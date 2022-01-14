@@ -1,0 +1,36 @@
+import com.rameses.annotations.*;
+
+class GdxNodeCloudPartnerRegistrationInterceptor {
+
+	@Service('GdxNodePartnerRegistrationService')
+	def svc; 
+
+	@After(pattern="CloudPartnerRegistrationService.registerChannel")
+	public void afterRegisterChannel( evt ) { 
+		svc.register( evt.result ); 	
+	} 
+
+	@Before(pattern="CloudPartnerRegistrationService.unregisterChannel")
+	public void beforeUnregisterChannel( evt ) { 
+		svc.unregister( evt.args[0] ); 	
+	} 
+
+
+	@After(pattern="CloudPartnerRegistrationService.register")
+	public void afterRegister( evt ) { 
+		try {
+			svc.register( evt.result ); 	
+		} catch(Throwable t) {
+			t.printStackTrace(); 
+		}		
+	} 
+
+	@Before(pattern="CloudPartnerRegistrationService.unregister") 
+	public void beforeUnregister( evt ) { 
+		try {
+			svc.unregister( evt.args[0] ); 	
+		} catch(Throwable t) {
+			t.printStackTrace(); 
+		}		
+	} 
+}

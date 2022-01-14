@@ -1,0 +1,23 @@
+import com.rameses.annotations.*;
+
+class RabbitMQPartnerRegistrationService {
+
+    @XConnection( dynamic=true )
+    def dynaConn; 
+
+    @ProxyMethod
+    public void register( param ) {
+        def key = param?.id.toString();
+        println 'rabbitmq_register    -> '+ key;
+        def mq = dynaConn.lookup("gdx-mq"); 
+        mq.addQueue( key, "gdx" );
+    }
+
+    @ProxyMethod
+    public void unregister( param ) {
+        def key = param?.id.toString();
+        println 'rabbitmq_unregister   -> '+ key;
+        def mq = dynaConn.lookup("gdx-mq"); 
+        mq.removeQueue( key, "gdx" );
+    } 
+}

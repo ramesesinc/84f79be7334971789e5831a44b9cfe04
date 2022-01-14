@@ -1,0 +1,42 @@
+import com.rameses.annotations.*;
+
+class RedisPartnerService {
+
+    @XConnection( dynamic=true )
+    def dynaConn; 
+
+    @ProxyMethod
+    public void register( param ) {
+        def key = "partner:"+ param.id;
+    	println 'redis_register   -> '+ key;
+        def cache = dynaConn.lookup("redis-cache"); 
+    	cache.put( key, "0" );
+    }
+
+    @ProxyMethod
+    public void unregister( param ) {
+        def key = "partner:"+ param.id;
+    	println 'redis_unregister -> '+ key;
+        def cache = dynaConn.lookup("redis-cache"); 
+    	cache.remove( key ); 
+    } 
+
+    @ProxyMethod
+    public def getValue( param ) {
+        def key = "partner:"+ param.id;
+        def cache = dynaConn.lookup("redis-cache"); 
+        return cache.get( key );
+    } 
+
+
+    @Async
+    @ProxyMethod
+    public void asyncRegister( param ) {
+        register( param ); 
+    }
+    @Async
+    @ProxyMethod
+    public void asyncUnregister( param ) {
+        unregister( param ); 
+    }
+}

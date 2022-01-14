@@ -5,71 +5,72 @@ class CloudPartnerRegistrationService {
     @DataContext("gdx_partner")
     def partner;	
 
-    // @XConnection("redis-cache")
-    // def cache;    	
-
-    @XConnection("gdx-mq")
-    def queueSvc;
-
-    @XConnection("gdx-node-service")
-    def nodeSvc;
-
     @Service("CloudPartnerService")
     def partnerSvc;
 
+    @Service 
+    def self; 
+
+    def verifyPartner( param, type ) {
+        def id = param?.id.toString();
+        def p = partner.find([ id: id ]).first();
+        if ( !p )
+            throw new Exception("register "+ type +" failed. Partner "+ id +" not found");
+
+        if ( p.state.toString().toUpperCase() != 'ACTIVE' ) 
+            throw new Exception("register "+ type +" failed. Partner "+ id +" is not active");
+
+        return p;        
+    }
 
     @ProxyMethod
-    public def registerChannel( def param ) {
-        def key = "partner:"+param.id;
-        def p = partner.find([id: param.id]).first();
-        if(!p)
-            throw new Exception("register channel failed. Partner not found");
-        if(p.state!='ACTIVE')
-            throw new Exception("register channel failed. Partner " + param.id + " is not active");
-        // cache.put(key, "0" );
-        return p;
+    public def registerChannel( param ) {
+        return verifyPartner( param, 'channel' ); 
     } 
 
     @ProxyMethod
-    public def unregisterChannel( def param ) {
-        def key = "partner:"+param.id;
-        // cache.remove( key );
+    public def unregisterChannel( param ) {
         return "OK";
     } 
 
+
     @ProxyMethod
-    public def registerQueue( def param ) {
-        def p = partner.find([id: param.id]).first();
-        if(!p)
-            throw new Exception("register queue failed. Partner not found");
-        if(p.state!='ACTIVE')
-            throw new Exception("register queue failed. Partner " + param.id + " is not active");
-        queueSvc.addQueue( param.id, "gdx");
-        return p;
+    public def registerQueue( param ) {
+        return verifyPartner( param, 'queue' ); 
     } 
 
     @ProxyMethod
-    public def unregisterQueue( def param ) {
-        queueSvc.removeQueue( param.id, "gdx");
+    public def unregisterQueue( param ) {        
         return "OK";
     } 
+
 
     @ProxyMethod
     public def updateRegistration() {
         def list = partnerSvc.getList();
-        for(o in list) {
-            def param = [id: o.id ];
-            if(o.state.toString().toUpperCase()=='ACTIVE') {
-                registerChannel(param);
-                registerQueue(param);
-                nodeSvc.post("register", [channel:o.id]);
+        list.each{ o-> 
+            def param = [ id: o.id ];
+            try {
+                if ( o.state.toString().toUpperCase() == 'ACTIVE' ) {
+                    self.register( param);
+                }
+                else {
+                    self.unregister( param );
+                }
             }
-            else {
-                unregisterChannel(param);
-                unregisterQueue(param);
-                nodeSvc.post("unregister", [channel:o.id]);
+            catch(Throwable t) {
+                t.printStackTrace(); 
             }
         }
     }
 
+    @ProxyMethod
+    public def register( param ) {
+        return verifyPartner( param, 'channel' ); 
+    } 
+
+    @ProxyMethod
+    public def unregister( param ) {        
+        return "OK";
+    }     
 }

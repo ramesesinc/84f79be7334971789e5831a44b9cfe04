@@ -1,0 +1,36 @@
+import com.rameses.annotations.*;
+
+class RabbitMQCloudPartnerRegistrationInterceptor {
+
+	@Service('RabbitMQPartnerRegistrationService')
+	def svc; 
+
+	@After(pattern="CloudPartnerRegistrationService.registerQueue")
+	public void afterRegisterQueue( evt ) { 
+		svc.register( evt.result ); 	
+	} 
+
+	@Before(pattern="CloudPartnerRegistrationService.unregisterQueue")
+	public void beforeUnregisterQueue( evt ) { 
+		svc.unregister( evt.args[0] ); 	
+	} 
+
+
+	@After(pattern="CloudPartnerRegistrationService.register")
+	public void afterRegister( evt ) { 
+		try {
+			svc.register( evt.result ); 
+		} catch(Throwable t) {
+			t.printStackTrace(); 
+		}
+	} 
+
+	@Before(pattern="CloudPartnerRegistrationService.unregister")
+	public void beforeUnregister( evt ) { 
+		try {
+			svc.unregister( evt.args[0] ); 	
+		} catch(Throwable t) {
+			t.printStackTrace(); 
+		} 
+	} 
+}
