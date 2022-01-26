@@ -1,0 +1,6 @@
+provider=script
+app.host=${obo_server_ip}
+app.cluster=cloud-server
+app.context=obo
+readTimeout=60000
+debug=true
