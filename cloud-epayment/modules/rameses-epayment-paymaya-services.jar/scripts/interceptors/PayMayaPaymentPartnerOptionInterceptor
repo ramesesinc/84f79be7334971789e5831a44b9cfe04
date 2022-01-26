@@ -1,0 +1,220 @@
+import com.rameses.annotations.*
+import com.rameses.services.extended.*
+import com.rameses.osiris3.server.JsonUtil
+import com.rameses.http.BasicHttpClient
+
+//***********************
+// PayMaya services
+//***********************
+class PayMayaPaymentPartnerOptionInterceptor {
+
+	final String PAY_PARTNER_ID = "PAYMAYA";
+
+	@DataContext('paymentorder')
+	def em_po
+
+	@DataContext('paymentorder_paid')
+	def em_po_paid
+
+	@DataContext('payment_partner')
+	def em_paymentpartner;
+
+	@Service('CloudPaymentService')
+	def svc;
+
+
+	@Before(pattern="CloudPaymentService.postPartnerPayment", eval="#{args[0].statusid == 'paymayasuccess' }")
+	public void beforePostPartnerPayment(evt) { 
+		def args = evt.args[0];
+
+		def partner = em_paymentpartner.find([objid: 'PAYMAYA']).first();
+
+		def pmt = getPaymentDetail(partner, args)
+		args.paypartnerid = partner.objid; 
+		args.paymentrefid = pmt.requestReferenceNumber; 
+	}
+
+	@After(pattern="CloudPaymentService.postPartnerPaymentError", eval="#{args[0].statusid == 'paymayaerror' }")
+	public void afterPostPartnerPaymentError(evt) { 
+		def args = evt.args[0];
+		log('afterPostPartnerPaymentError (args) => '+ args); 
+
+		def po = svc.getPaymentOrder([ objid: args.paymentrefid ]); 
+
+		def error = evt.result;
+		error.orgcode = po?.orgcode;
+		log('afterPostPartnerPaymentError (error) => '+ error);
+	}
+	
+	@After(pattern="CloudPaymentService.getPaymentPartnerOption", eval="#{result.paypartnerid.toLowerCase() == 'paymaya' }")
+	public void buildPaymentPartnerOption(evt) { 
+		def po = evt.args[0].paymentorder
+		def partner = evt.result.paypartner
+		def checkout = evt.args[0].checkout
+		if ( checkout == null ) checkout = [:]
+
+		def params = [:]
+		params.requestReferenceNumber = po.objid
+		params.totalAmount = getTotalAmount(po, checkout)
+		params.buyer = getBuyerInfo(po)
+		params.items = getItems(po, checkout)
+		params.redirectUrl = getRedirectUrl(partner, po, checkout)
+		params.metadata = [:]
+		partner.params = params 
+		checkOut(partner, po, checkout)
+	}
+
+	@After( pattern="CloudPaymentService.getPostPaymentParams", eval="#{args[0]?.paypartnerid.toString().toLowerCase() == 'paymaya'}") 
+	public void buildPostPaymentParams( evt ) {
+		def params = evt.args[0] 
+		def pmt = evt.result
+		def paypartner = pmt.paypartner
+		def po = em_po.find([ objid: params.paymentrefid ]).first(); 
+
+		pmt.paypartnerid = paypartner.objid
+		pmt.traceid = po.checkoutid
+		pmt.tracedate = po.txndate
+		pmt.amount = po.amount
+		pmt.paymentrefid = params.paymentrefid
+	} 	
+
+	@After(pattern="CloudPaymentService.postPartnerWebhook", eval="#{args[0].paypartnerid.equalsIgnoreCase('paymaya')}")
+	public void afterPostPartnerWebhook(evt) { 
+		def args = evt.args[0];
+		def result = evt.result;
+		def checkout = args.data;
+
+		def paymentorderid = checkout.requestReferenceNumber;
+
+		// unsuccessful payment, log and return 200
+		def payStatus = (checkout.paymentStatus ? checkout.paymentStatus : checkout.status);
+		if (payStatus != "PAYMENT_SUCCESS") {
+			result.status = 200;
+			log('afterPostPartnerWebhook:  unsuccessful payment: '+ paymentorderid +': '+ payStatus);
+			return;
+		}
+
+		//is po paid 
+		def paidpo = em_po_paid.find([objid: paymentorderid]).first();
+		if (paidpo) {
+			result.status = 200;
+			log('afterPostPartnerWebhook: Transaction already posted');
+			return;
+		} 
+
+		//is valid po
+		def po = em_po.find([objid: paymentorderid]).first();
+		if (po) {
+			def params = [:]
+			params.statusid = 'paymayasuccess';
+			params.paymentrefid = checkout.requestReferenceNumber;
+			params.paypartnerid = 'PAYMAYA';
+			svc.postPartnerPayment(params);
+			log('afterPostPartnerWebhook: Post partner payment completed.');
+		} 
+		else {
+			//invalid po
+			result.status = 200;
+			log('afterPostPartnerWebhook: Invalid transaction');
+		}
+	}
+
+	void checkOut(partner, po, checkout) {
+		def option = partner.info[checkout.type];
+		def urlPath = option.actionurl
+		def jsonData = JsonUtil.toString(partner.params)
+
+		System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2"); 
+
+		def http = new BasicHttpClient()
+		def retval = http.post(urlPath, jsonData, option.headerpost)
+		if (retval.responsecode == 200) {
+			partner.checkout = JsonUtil.toMap(retval.data)
+			if ('card'.equalsIgnoreCase(checkout.type)) {
+				em_po.find([objid: po.objid]).update([checkoutid: partner.checkout.checkoutId, checkouttype: checkout.type])
+			} 
+			else if ('wallet'.equalsIgnoreCase(checkout.type)) {
+				em_po.find([objid: po.objid]).update([checkoutid: partner.checkout.paymentId, checkouttype: checkout.type])
+			}
+		} 
+		else {
+			partner.error = JsonUtil.toMap( retval.error ); 
+			partner.error.errormsg = partner.error?.error; 
+			log('afterPostPartnerWebhook: (error) => '+ partner.error);
+		} 
+	}
+
+	def getPaymentDetail(partner, args) {
+		def po = em_po.select("checkoutid,checkouttype").find([ objid: args.paymentrefid ]).first();
+		if ( po ) {
+			def option = partner.info[po.checkouttype]
+			def urlPath = option.actionurl + "/" + po.checkoutid
+		}
+		return [requestReferenceNumber: args.paymentrefid];
+	}
+
+	def getTotalAmount(po, checkout) {
+		def amount = po.amount
+		def fee = checkout && checkout.fee ? checkout.fee : 0.0
+		
+		def totalAmount = [
+			currency: 'PHP',
+			value: amount + fee,
+			details: [
+				serviceCharge: fee, 
+				subtotal: amount,
+			]
+		]
+		return totalAmount
+	}
+
+	def getBuyerInfo(po) {
+		return [
+			name: po.paidby,
+			email: ( po.paidbyemail ? po.paidbyemail : ''),
+		]
+	}
+
+	def getItems(po, checkout) {
+		def amount = po.amount
+		def fee = checkout && checkout.fee ? checkout.fee : 0.0
+
+		def item = [
+			name: po.txntypename,
+			description: po.txntypename,
+			quantity: '1',
+			txnno: po.objid,
+			amount: [
+				value: amount + fee,
+				details: [
+					amount: amount, 
+					serviceCharge: fee,
+					subtotal: amount,
+				]
+			],
+			totalAmount: [
+				value: amount + fee, 
+				details: [
+					serviceCharge: fee,
+					subtotal: amount,
+				]
+			]
+		]
+		return [item]
+	}
+
+	def getRedirectUrl(partner, po, checout) {
+		def success = (partner.info?.testsuccessurl ? partner.info?.testsuccessurl : partner.info?.successurl) + '?paymentrefid=' + po.objid
+		def failure = (partner.info?.testerrorurl ? partner.info?.testerrorurl : partner.info?.errorurl) + '?paymentrefid=' + po.objid
+		def cancel = (partner.info?.testcancelurl ? partner.info?.testcancelurl : partner.info?.cancelurl) + '?paymentrefid=' + po.objid
+		return [
+			success: success,
+			failure: failure,
+			cancel: cancel,
+		]
+	}
+
+	void log( msg ) {
+		println ('\n'+ PAY_PARTNER_ID +': '+ msg);
+	}	
+}

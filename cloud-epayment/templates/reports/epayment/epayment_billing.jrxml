@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="epayment_billing"
+
+		 language="groovy"		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="612"
+		 pageHeight="792"
+		 columnWidth="558"
+		 columnSpacing="0"
+		 leftMargin="27"
+		 rightMargin="27"
+		 topMargin="36"
+		 bottomMargin="36"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="PREPAREDBY" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="PREPAREDBYTITLE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="APPROVEDBY" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="APPROVEDBYTITLE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="PRINTDATE" isForPrompting="false" class="java.util.Date"/>
+
+	<field name="billperiod" class="java.lang.String"/>
+	<field name="items" class="java.lang.Object"/>
+	<field name="billdate" class="java.util.Date"/>
+	<field name="paypartner.name" class="java.lang.String"/>
+
+
+		<group  name="ITEMS" >
+			<groupExpression><![CDATA[]]></groupExpression>
+			<groupHeader>
+			<band height="24"  isSplitAllowed="true" >
+				<subreport  isUsingCache="true">
+					<reportElement
+						x="0"
+						y="0"
+						width="558"
+						height="24"
+						key="subreport-1"/>
+					<subreportParameter  name="BILLPERIOD">
+						<subreportParameterExpression><![CDATA[$F{billperiod}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="BILLDATE">
+						<subreportParameterExpression><![CDATA[$F{billdate}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PAYPARTNER">
+						<subreportParameterExpression><![CDATA[$F{paypartner.name}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PREPAREDBY">
+						<subreportParameterExpression><![CDATA[$P{PREPAREDBY}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PREPAREDBYTITLE">
+						<subreportParameterExpression><![CDATA[$P{PREPAREDBYTITLE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="APPROVEDBY">
+						<subreportParameterExpression><![CDATA[$P{APPROVEDBY}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="APPROVEDBYTITLE">
+						<subreportParameterExpression><![CDATA[$P{APPROVEDBYTITLE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PRINTDATE">
+						<subreportParameterExpression><![CDATA[$P{PRINTDATE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<dataSourceExpression><![CDATA[$F{items}]]></dataSourceExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA["epayment_billing_items.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

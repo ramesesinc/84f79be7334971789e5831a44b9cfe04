@@ -1,0 +1,13 @@
+<schema>
+	<element tablename="payment_partner_option">
+		<field name="objid" primary="true"/>	
+		<field name="partnerid" />
+		<complex name="paypartner" ref="payment_partner" jointype="many-to-one" required="true"> 
+			<key field="paypartnerid" target="objid"/>	
+		</complex>
+		<complex name="info" serializer="default" required="true"/>
+		<complex name="webfee" ref="payment_partner_webfee" jointype="many-to-one" required="false">
+			<key field="objid" target="objid" />
+		</complex>
+	</element>
+</schema>

@@ -1,0 +1,82 @@
+import com.rameses.annotations.*;
+
+class DbpPaymentPartnerOptionInterceptor {
+
+	final String PAY_PARTNER_ID = "DBP";
+
+	@Service('CloudPaymentService')
+	def cloudPaymentSvc; 
+	
+	@Service("DateService")
+	def dateSvc;
+
+	def formatter = new java.text.DecimalFormat('0.00');
+
+	@Before(pattern="CloudPaymentService.postPartnerPayment", eval="#{args[0].statusid == 'dbpsuccess' }")
+	public void beforePostPartnerPayment(evt) { 
+		def m = evt.args[0];
+		m.paypartnerid = 'DBP'; 
+		m.paymentrefid = m.referenceCode; 
+	}
+
+	@After(pattern="CloudPaymentService.postPartnerPaymentError", eval="#{args[0].statusid == 'dbperror' }")
+	public void afterPostPartnerPaymentError(evt) { 
+		def args = evt.args[0];
+		log('afterPostPartnerPaymentError (args) => '+ args);		
+
+		def error = evt.result;
+		error.code = args.responseCode;
+		error.message = args.message;
+
+		def po = cloudPaymentSvc.getPaymentOrder([ objid: args.referenceCode ]); 
+  		error.orgcode = po?.orgcode;
+		
+		log('afterPostPartnerPaymentError (error) => '+ error);
+	}
+
+	@After(pattern="CloudPaymentService.getPaymentPartnerOption", eval="#{result.paypartnerid.toLowerCase() == 'dbp' }")
+	public void buildPaymentPartnerOption(evt) {
+		def po = evt.args[0].paymentorder;
+		def partner = evt.result.paypartner;
+		def params = [:];
+		
+		params.terminalID = partner.info?.terminalid;
+		params.referenceCode = po.objid; 
+		params.serviceType = po.particulars; 
+		params.amount = ( po.amount == null ? "" : formatter.format( po.amount )); 
+
+		def secval = partner.info?.terminalid + po.objid + '{' + partner.info?.transactionkey + '}'; 
+		params.securityToken = com.rameses.util.Encoder.SHA1.encode(secval);
+		log('buildPaymentPartnerOption (params) => '+ params);
+		partner.params = params; 
+	}
+
+	@After( pattern="CloudPaymentService.getPostPaymentParams", eval="#{args[0]?.paypartnerid.toString().toLowerCase() == 'dbp'}") 
+	public void buildPostPaymentParams( evt ) {
+		def params = evt.args[0]; 
+		def pmt = evt.result;
+
+		//we also need to check security code.
+		pmt.paypartnerid = 'DBP';	
+		pmt.amount = params.amount;
+		pmt.paymentrefid = params.referenceCode;
+		pmt.traceid = params.retrievalReferenceCode;
+		pmt.tracedate = dateSvc.getServerDate();
+
+		def partner = pmt.paypartner;
+
+		//check if security credentials matches
+		def secval = partner.info?.terminalid + pmt.paymentrefid + '{' + partner.info?.transactionkey + '}'; 
+		def requestToken = com.rameses.util.Encoder.SHA1.encode(secval);
+
+		def responseToken = com.rameses.util.Encoder.SHA1.encode(requestToken + '{' + partner.info?.transactionkey + '}'); 
+		if(!responseToken.equals(params.securityToken)) {
+			log('Security token mismatch:  responseToken='+ responseToken +', securityToken='+ params.securityToken); 
+			throw new Exception("Security token mismatch. This is not a valid payment from DBP");
+		}
+	} 
+
+	void log( msg ) {
+		println ('\n'+ PAY_PARTNER_ID +': '+ msg);
+	}	
+}

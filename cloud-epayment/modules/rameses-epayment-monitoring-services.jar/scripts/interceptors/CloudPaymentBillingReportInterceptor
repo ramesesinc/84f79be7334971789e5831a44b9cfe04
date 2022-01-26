@@ -1,0 +1,76 @@
+import com.rameses.annotations.*;
+import com.rameses.util.Base64Cipher
+import com.rameses.services.extended.*;
+import com.rameses.util.ObjectDeserializer;
+
+class CloudPaymentBillingReportInterceptor {
+	@Service('DateService')
+	def dtSvc;
+
+	@DataContext("payment_partner")
+	def em_paypartner;
+
+	@ActiveDB('epayment_billing')
+	def em;
+
+	@Service(value="CloudPartnerService", connection="partner" )
+	def partnerSvc;
+
+	@After( pattern="FormReportService.getData", eval="#{args[0].reportid.matches('epayment_billing') }" )
+	public def getData( evt ) {
+		def req = evt.args[0];
+		def result = evt.result;
+		def reportid =  req.reportid;
+		def refid = req.parameters.objid;
+
+		def b64 = new Base64Cipher();
+		def datastr = b64.decode(refid);
+		def tokens = datastr.split(":");
+
+		if (tokens.length < 3) throw new Exception('Invalid parameters.');
+		def paypartnerid = tokens[0];
+		def year = tokens[1];
+		def monthidx = tokens[2];
+
+		def paypartner = em_paypartner.select('objid,name,code').find([objid: paypartnerid]).first();
+
+		def param = [:];
+		param.paypartnerid = paypartnerid;
+		param.startdate = dtSvc.parse('yyyy-MM-dd', year + '-' + monthidx.padLeft(2, '0') + '-01'); 
+		param.enddate = dtSvc.getMonthEndDate(param.startdate) + 1;
+
+		def billitems = em.getBilling(param);
+		if (!billitems) throw new Exception('No record found.');
+
+		def partners = partnerSvc.getActiveList().collect{ [id: it.id, title: it.title]};
+
+		billitems.each{ item ->
+			def partner = partners.find{it.id == item.orgcode}
+			def info = [:];
+			if (item.info) {
+				try {
+					info = ObjectDeserializer.instance.read(item.info)
+				} catch(err) {
+					//ignore
+				}
+			}
+
+			item.merchant = partner.title;
+			if (info && info.merchantcode) {
+				item.merchantid = info.merchantcode;
+			} else {
+				item.merchantid = item.orgcode;
+			}
+		}
+
+		def months = dtSvc.getMonths();
+		def month = months.find{it.index == Integer.parseInt(monthidx)}
+		def data = [:]
+		data.template = "reports/epayment/" + reportid;
+		data.paypartner = paypartner;
+		data.billperiod = "For the Month of " + month.caption + ", " + year;
+		data.billdate = dtSvc.serverDate;
+		data.items = billitems;
+		result.data = data;
+	}
+}

@@ -1,0 +1,78 @@
+import com.rameses.annotations.*;
+import com.rameses.common.*;
+import com.rameses.osiris3.server.JsonUtil;
+
+import java.security.KeyFactory;
+import java.security.Signature;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.commons.net.util.Base64;
+
+class GCashSignatureService {
+	
+	@ProxyMethod
+	public def getSignature( request, prikey ) {
+		if ( request instanceof String ) {
+			return signSHA256RSA( request, prikey ); 	
+		}
+		
+		def jsonData = JsonUtil.toString( request );
+		return signSHA256RSA( jsonData, prikey ); 
+	} 
+
+	@ProxyMethod
+	public def validateCheckout( checkout, pubkey ) {
+		println '\nvalidateCheckout ============================= '
+		def response = checkout.response;
+		def resultInfo = response.body?.resultInfo; 
+		if ( resultInfo && resultInfo.resultCodeId.toString() != '00000000') {
+			throw new Exception(''+ resultInfo.resultCodeId +': '+ resultInfo.resultMsg); 
+		}
+
+		def responseStr = JsonUtil.toString( response ); 
+		println 'responseStr -> '+ responseStr; 
+		println 'signature   -> '+ checkout.signature; 
+		boolean verified = verify( responseStr, checkout.signature, pubkey ); 
+		if ( !verified ) { 
+			throw new Exception('Signature cannot be verified using the public key');  
+		}  
+		return response; 
+	}
+
+
+    String signSHA256RSA( String plainText, String prikey ) {   	
+    	String strpk = ( prikey ? prikey : System.getenv("GCASH-PRI-KEY"));
+    	if ( !strpk ) throw new Exception('GCASH-PRI-KEY system env not found'); 
+
+        byte[] pk_bytes = Base64.decodeBase64( strpk ); 
+        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec( pk_bytes );
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+
+        Signature privateSignature = Signature.getInstance("SHA256withRSA");
+        privateSignature.initSign( kf.generatePrivate( spec ));
+        privateSignature.update( plainText.getBytes("UTF-8"));
+
+		byte[] encbytes = privateSignature.sign(); 
+		String encstr = Base64.encodeBase64String( encbytes ); 
+		return encstr.replaceAll("\\s{1,}",""); 
+    }  
+
+    boolean verify( String plainText, String signature, String pubkey ) {
+    	byte[] bytes = plainText.getBytes("UTF-8"); 
+    	byte[] sigBytes = Base64.decodeBase64( signature );
+
+		String strpk = ( pubkey ? pubkey : System.getenv("GCASH-PUB-KEY"));
+		if ( !strpk ) throw new Exception('GCASH-PUB-KEY system env not found'); 
+
+        byte[] keyBytes = Base64.decodeBase64( strpk );
+        X509EncodedKeySpec spec = new X509EncodedKeySpec( keyBytes );
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+
+        Signature sig = Signature.getInstance("SHA256withRSA");
+        sig.initVerify( kf.generatePublic( spec ));
+        sig.update( bytes );
+        return sig.verify( sigBytes ); 
+    }
+}
