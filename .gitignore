@@ -1,0 +1,17 @@
+._.DS_Store
+._.*
+._*
+.DS_Store
+.osiris_pid
+.shutdown_pid
+Thumbs.db
+_custom/*
+!_custom/jasper
+/cloud-jasper/output
+/rabbitmq/data
+/redis-cache
+/redis/data
+baks
+bak
+/cloud-filipizen/attachments
+docker-compose-private.yml
