@@ -1,0 +1,4 @@
+provider=redis-cache
+redis.host=${redis_ip}
+redis.port=${redis_port}
+redis.password=${redis_password}

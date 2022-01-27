@@ -1,0 +1,57 @@
+import com.rameses.annotations.*;
+
+class CloudPartnerService {
+
+    @DataContext("gdx_partner")
+    def partner;		
+   
+    @XConnection("redis-cache")
+    def cache; 
+
+    @DataContext("barangay")
+    def barangayEm; 
+   
+    @ProxyMethod
+    public def getList() {
+		  return partner.getList();
+    } 
+
+    // updated
+    @ProxyMethod
+    public def getActivePartners() {
+        return getList().findAll{( it.state.toString().equalsIgnoreCase('ACTIVE') )} 
+    } 
+
+
+    @ProxyMethod
+    public def getActiveList() {
+		return partner.orderBy("group.name").where(" state='ACTIVE' ").list();
+    }		
+
+    @ProxyMethod
+    public def getInactiveList() {
+		return partner.orderBy("group.name").where(" state='INACTIVE' ").list();
+    }		
+
+ 	@ProxyMethod
+    public def findByGroupAndName(params) {
+		return partner.find( ["group.name": params.groupname, "name": params.name ] ).first();
+    }		
+
+    @ProxyMethod
+    public def findByCode(params) {
+        return partner.find( ["group.name": params.groupname, "name": params.name ] ).first();
+    }   	
+
+    @ProxyMethod
+    public def findById(params) {
+        return partner.find( [id: params.id ] ).first();
+    }           
+
+    @ProxyMethod
+    public def getBarangayList( def param ) {
+        return barangayEm.find([parentid: param.orgcode]).select("objid,name").orderBy("name").list(); 
+    } 
+
+
+}
