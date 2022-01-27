@@ -1,0 +1,54 @@
+server {
+    listen       80;
+    server_name  localhost;
+
+    #
+    # This is for the static files
+    # 
+    root   /res;
+
+    location /static {
+        autoindex on;
+    }
+
+    location / {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:9080;
+    }
+
+    location /socket.io {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:3000;
+    }
+
+    location /service/ {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:3000;
+    }
+
+    location /cloud-server/services/obo/ {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:10001/osiris3/services/enterprise/;
+    }
+    
+    location /cloud-server/services/epayment/ {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:9072/osiris3/services/enterprise/;
+    }
+    
+    location /cloud-server/json/epayment/ {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:9072/osiris3/json/enterprise/;
+    }
+
+
+    location /cloud-server/services/partner/ {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:9071/osiris3/services/enterprise/;
+    }
+
+    location /cloud-server/json/partner/ {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:9071/osiris3/json/enterprise/;
+    }
+}

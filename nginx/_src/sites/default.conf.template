@@ -1,0 +1,174 @@
+server {
+    listen       80;
+    server_name  localhost;
+
+    location /nginx_status {
+        stub_status;
+    }
+    
+    ## 
+    ## main routing 
+    ## 
+    location / {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:5000;
+    }
+
+    location ~* ^/assets/ {
+        expires 1d;
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:5000;
+    }
+
+    location ~* ^/payoptions {
+        rewrite ^/(.*)$  /filipizen/$1 last;
+    }
+
+    location ~* ^/webhooks {
+        rewrite ^/(.*)$  /filipizen/$1 last;
+    }
+
+    location ~* ^/filipizen/(epayment|payoptions|service) {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:5000;
+    }
+
+    location ~* ^/filipizen/webhooks/(paymaya|gcash|lbp) {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:5000;
+    }
+
+
+    ## 
+    ## S3 routing
+    ## 
+    location ~* ^/s3/uploads-89aec797-f5e4-4778-b4a0-3a324906ef50.s3.us-west-2.amazonaws.com/ {
+        proxy_http_version     1.1;
+        proxy_redirect         off;
+        proxy_set_header       Connection "";
+        proxy_set_header       Authorization '';
+        proxy_set_header       Host uploads-89aec797-f5e4-4778-b4a0-3a324906ef50.s3.us-west-2.amazonaws.com;
+        proxy_set_header       X-Real-IP $remote_addr;
+        proxy_set_header       X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_hide_header      x-amz-id-2;
+        proxy_hide_header      x-amz-request-id;
+        proxy_hide_header      x-amz-meta-server-side-encryption;
+        proxy_hide_header      x-amz-server-side-encryption;
+        proxy_hide_header      Set-Cookie;
+        proxy_ignore_headers   Set-Cookie;
+        proxy_intercept_errors on;
+        add_header             Cache-Control max-age=31536000;
+        rewrite ^/s3/uploads-89aec797-f5e4-4778-b4a0-3a324906ef50.s3.us-west-2.amazonaws.com/(.*)$ /$1 break; 
+        proxy_pass https://uploads-89aec797-f5e4-4778-b4a0-3a324906ef50.s3.us-west-2.amazonaws.com;
+    }
+
+
+    ## 
+    ## attachment 
+    ## 
+    location /filipizen/attachment/upload {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:5000/filipizen/attachment/upload;
+    } 
+
+    location /filipizen/attachment/download {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:5000/filipizen/attachment/download$is_args$args;
+    }
+
+    location /filipizen/attachment/delete {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:5000/filipizen/attachment/delete$is_args$args;
+    }
+
+    location /filipizen/attachment/list {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:5000/filipizen/attachment/list$is_args$args;
+    }
+
+
+    ##
+    ## FILIPIZEN FILESERVER ROUTING
+    ##
+    location /filipizen/fileserver/upload {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:7000/fileserver/upload;
+    }
+
+    location /filipizen/fileserver/download {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:7000/fileserver/download$is_args$args;
+    }
+
+    location /filipizen/fileserver/delete {
+        include conf.d/proxy.conf;
+        proxy_set_header content-type "application/json";
+        proxy_pass http://${app_server_ip}:7000/fileserver/delete$is_args$args;
+    }
+
+
+    ## 
+    ## cloud-gdx-node routing 
+    ## 
+    location ~* ^/socket.io {
+        include conf.d/proxy.conf;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_pass http://${app_server_ip}:3000;
+    }
+
+    location ~* ^/service/ {
+        include conf.d/proxy.conf;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_pass http://${app_server_ip}:3000;
+    }
+
+
+    ## 
+    ## cloud-jasper routing 
+    ##     
+    location ~* ^/jreports {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:5005;
+    }
+
+
+    ## 
+    ## cloud-partner routing 
+    ##     
+    location /cloud-server/json/partner/ {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:9071/osiris3/json/enterprise/;
+    }
+    location /cloud-server/services/partner/ {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:9071/osiris3/services/enterprise/;
+    }
+
+    ## 
+    ## cloud-epayment routing 
+    ##     
+    location /cloud-server/json/epayment/ {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:9072/osiris3/json/enterprise/;
+    }
+    location /cloud-server/services/epayment/ {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:9072/osiris3/services/enterprise/;
+    }
+
+    ## 
+    ## cloud-obo routing 
+    ##     
+    location /cloud-server/json/obo/ {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:10001/osiris3/json/enterprise/;
+    }
+    location /cloud-server/services/obo/ {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:10001/osiris3/services/enterprise/;
+    }
+} 

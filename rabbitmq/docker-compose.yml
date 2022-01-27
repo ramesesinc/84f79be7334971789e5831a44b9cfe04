@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+
+  cloud-rabbitmq:
+    image: "rabbitmq:3-management"
+    container_name: cloud-rabbitmq
+    restart: always
+    hostname: myhost
+    logging: 
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: "10m"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes: 
+      - ../rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@myhost

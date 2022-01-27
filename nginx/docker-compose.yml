@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+
+  cloud-proxy-server:
+    image: nginx:latest
+    container_name: cloud-proxy-server
+    restart: always
+    logging: 
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: "10m"
+    environment:
+      TZ: "Asia/Manila"
+    env_file:
+      - ../_res/env.conf
+      - ../_custom/env.conf
+    ports:
+      - "800:80"
+    volumes:
+      - ./res:/res
+      - ./_src:/_src
+      - ./_src/conf.d:/etc/nginx/conf.d
+      - ./_src/nginx.conf:/etc/nginx/nginx.conf
+
+      ## set timezone 
+      - ./_src/tz/zoneinfo:/usr/share/zoneinfo
+      - ./_src/tz/zoneinfo/Asia/Manila:/etc/localtime
+      - ./_src/tz/timezone:/etc/timezone
+
+    command: ["sh", "/_src/scripts/run.sh" ]
