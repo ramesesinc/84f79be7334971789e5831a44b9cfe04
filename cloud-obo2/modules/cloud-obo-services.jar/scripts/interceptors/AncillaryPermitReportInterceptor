@@ -1,0 +1,48 @@
+import com.rameses.annotations.*;
+
+class AncillaryPermitReportInterceptor {
+
+	@Service(value="OnlineBuildingPermitService")
+	def oboReportSvc;
+
+	@After( pattern="FormReportService.getData", eval="#{args[0].reportid.matches('building_ancillary_.*') }" )
+	public def getData( evt ) {
+		def req = evt.args[0];
+		def result = evt.result;
+		def reportid =  req.reportid;
+		def refid = req.parameters.objid;
+	
+	 	def app = oboReportSvc.getAncillaryPermit([ objid: refid ]);
+	 	def parent = oboReportSvc.getApplication([ appid: app.appid ]);
+		if ( parent) { 
+			//we should remove state so as not to conflict with the application state
+			app.remove("state");
+			app.remove("objid");
+			parent.putAll( app );
+			app = parent;
+		}
+
+		def rpus = oboReportSvc.getRpus([ appid: app.appid ]); 
+		if ( rpus ) {
+			app.lotowner = rpus.first().owner; 
+		} else {
+			app.lotowner = [:]; 
+		}
+
+		app.applicant.middleinitial = (app.applicant.middlename ? app.applicant.middlename[0].toString() : '');
+
+		app.infos.each {
+			app.put( it.name.toLowerCase(), it.value );	
+		}	
+		
+		def worktypes = [:];
+		app.worktypes?.each {
+			worktypes.put( it.toLowerCase()?.replaceAll(" ", "_") , true );
+		}
+		app.worktypes = worktypes;
+		app.qrcode = "qrcode:" + app.objid;
+		app.template = "reports/obo/" + reportid.replace("building_ancillary_", "") + "_permit";
+		app.remove('infos'); 
+		result.data = app;
+	}
+}

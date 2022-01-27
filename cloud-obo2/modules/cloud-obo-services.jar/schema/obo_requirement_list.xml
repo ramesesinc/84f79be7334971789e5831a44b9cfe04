@@ -1,0 +1,8 @@
+<schema>
+	<element tablename="obo_requirement_list">
+		<field name="objid" primary="true"/>
+		<field name="orgcode" />
+		<field name="apptype" />
+		<field name="text" />
+	</element>
+</schema>

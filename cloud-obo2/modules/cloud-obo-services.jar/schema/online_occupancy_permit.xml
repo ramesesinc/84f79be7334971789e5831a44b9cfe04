@@ -1,0 +1,92 @@
+<schema>
+	<element tablename="online_occupancy_permit">
+		<field name="objid" primary="true" visible="true" searchable="true" indexed="true" caption="Tracking No" />
+		<field name="state" />
+		<field name="orgcode" required="true"/>
+
+		<field name="apptype" required="true"/>
+		<field name="permittype" required="true"/>
+
+		<field name="contact_name" required="true"  indexed="true" caption="Contact Name"/>
+		<field name="contact_detail"/>
+		<field name="contact_email" required="true"  indexed="true" caption="Contact Email"/>
+		<field name="contact_mobileno"/>
+		<field name="dtfiled" type="timestamp"/>
+
+		<!-- bldgpermit -->
+		<field name="bldgpermit_objid" />
+		<field name="bldgpermit_dtissued" />
+		<field name="bldgpermit_permitno" />		
+		<field name="bldgpermit_title" />
+		<field name="bldgpermit_description" />
+		<field name="bldgpermit_occupancytypeid" />
+		<field name="bldgpermit_locationid" />
+		<field name="bldgpermit_projectcost" type="decimal"/>
+		<field name="bldgpermit_height" type="decimal"/>
+		<field name="bldgpermit_numunits" type="integer"/>
+		<field name="bldgpermit_numfloors" type="integer"/>
+		<field name="bldgpermit_totalfloorarea" type="decimal"/>
+		<field name="bldgpermit_dtproposedconstruction" />
+		<field name="bldgpermit_dtexpectedcompletion" />
+		<field name="bldgpermit_totalfloorarea" type="decimal" />
+		<field name="bldgpermit_numfloors" type="integer" />
+		<field name="bldgpermit_numunits" type="integer" />
+		<field name="bldgpermit_txntype" />
+		<field name="bldgpermit_location_lotno" />
+		<field name="bldgpermit_location_blockno" />
+		<field name="bldgpermit_location_street" />
+		<field name="bldgpermit_location_barangay_name" />
+		<field name="bldgpermit_location_barangay_objid" />
+		<field name="bldgpermit_location_unitno" />
+		<field name="bldgpermit_location_bldgno" />
+		<field name="bldgpermit_location_bldgname" />
+		<field name="bldgpermit_location_subdivision" />
+
+
+		<!-- actual values -->
+		<field name="actualheight" type="decimal"/>
+		<field name="actualnumunits" type="integer"/>
+		<field name="actualnumfloors" type="integer"/>
+		<field name="actualtotalfloorarea" type="decimal"/>
+
+		<!-- occupancy permit info -->
+		<field name="dtactualstarted" />
+		<field name="dtactualcompleted" />
+		<field name="totalmaterialcost" type="decimal" />
+		<field name="totaldirectlaborcost" type="decimal" />
+		<field name="totalequipmentcost" type="decimal" />
+		<field name="totalothercost" type="decimal" />
+		
+		<field name="firealarmcost" type="decimal" />
+		<field name="sprinklercost" type="decimal" />
+		<field name="lpgpipingcost" type="decimal" />
+		<field name="firesuppcost" type="decimal" />
+
+		<field name="contractor_name" />
+		<field name="contractor_address" />
+		<field name="contractor_pcab_idno" />
+		<field name="contractor_pcab_dtvalid"/>
+		<field name="contractor_tin" />
+		<field name="contractor_manager_name" />
+		<field name="contractor_manager_email" />
+		
+		<!-- shows where the current step is at -->
+		<field name="step" type="integer"/>
+
+		<complex name="applicant" ref="online_occupancy_permit_entity" jointype="many-to-one" required="false">
+			<key field="applicantid" target="objid" />
+		</complex>	
+
+		<complex name="supervisor" ref="obo_professional_info" jointype="many-to-one" required="false">
+			<key field="supervisorid" target="objid" />
+		</complex>	
+
+		<complex name="occupancytype" ref="vw_obo_occupancy_type" jointype="many-to-one" required="false">
+			<key field="occupancytypeid" target="objid" />
+		</complex>	
+
+		<field name="actualprojectcost" expr="totalmaterialcost + totaldirectlaborcost + totalequipmentcost + totalothercost"  type="decimal" />
+
+	</element>
+</schema>
+

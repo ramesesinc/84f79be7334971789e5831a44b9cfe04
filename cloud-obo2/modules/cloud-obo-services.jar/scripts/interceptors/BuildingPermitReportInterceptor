@@ -1,0 +1,50 @@
+import com.rameses.annotations.*;
+
+class BuildingPermitReportInterceptor {
+
+	@Service(value="OnlineBuildingPermitService")
+	def oboReportSvc;
+
+	@After( pattern="FormReportService.getData", eval="#{args[0].reportid.matches('building_permit') }" )
+	public def getData( evt ) {
+		def req = evt.args[0];
+		def result = evt.result;
+		def reportid =  req.reportid;
+		def refid = req.parameters.objid;
+
+		def app = oboReportSvc.getApplication([ appid: refid ]);
+		def rpus = oboReportSvc.getRpus([ appid: refid ]); 
+		def ancillaries = oboReportSvc.getAncillaryPermits( [ appid: refid ]);
+		if ( rpus ) {
+			app.lotowner = rpus.first().owner; 
+		} else {
+			app.lotowner = [:]; 
+		}
+		app.location.tdno = rpus*.tdno?.join(",");
+		app.location.tctno = rpus*.tctno?.join(",");
+
+		if(app.location.tctno == "null") app.location.tctno = null;		 
+		
+		app.applicant.middleinitial = (app.applicant.middlename ? app.applicant.middlename[0].toString() : '');
+
+		if(!app.worktypes) app.worktypes = [];
+
+		app.qrcode = "qrcode:" + app.objid;
+
+		def bldgcost = app.projectcost;
+		ancillaries.findAll{ it.type.includecost == 1  }.each {
+			def z = [:];
+			z.projectcost = it.projectcost;
+			z.equipmentcost = it.equipmentcost;
+			app.put( it.type.objid, z);
+			bldgcost -= ((it.projectcost==null) ? 0 : it.projectcost);
+		}
+		app.buildingcost = bldgcost;
+
+		app.template = "reports/obo/" + reportid;
+		result.data = app;
+
+
+		
+	}
+}

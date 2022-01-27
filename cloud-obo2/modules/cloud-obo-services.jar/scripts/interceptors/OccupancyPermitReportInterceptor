@@ -1,0 +1,87 @@
+import com.rameses.annotations.*;
+
+class OccupancyPermitReportInterceptor {
+
+	@Service("OnlineOccupancyPermitService")
+	def oboReportSvc;
+
+	@After( pattern="FormReportService.getData", eval="#{args[0].reportid.matches('certificate_of_occupancy') }" )
+	public def getOccupancyData( evt ) {
+		def req = evt.args[0];
+		def result = evt.result;
+		def reportid =  req.reportid;
+		def refid = req.parameters.objid;
+
+		def app = oboReportSvc.getApplication([ appid: refid ]);
+		app.lotowner  = app.location?.owner;
+		app.applicant.middleinitial = (app.applicant.middlename ? app.applicant.middlename[0].toString() : '');
+		app.bldgpermit.location.text = formatAddress( app.bldgpermit.location );
+		app.qrcode = "qrcode:" + app.objid;
+		app.reportid = reportid;
+		app.template = "reports/obo/" + reportid;
+		result.data = app;
+	}
+
+	@After( pattern="FormReportService.getData", eval="#{args[0].reportid.matches('certificate_of_completion') }" )
+	public def afterCompletionData( evt ) {
+		def req = evt.args[0];
+		def result = evt.result;
+		def reportid =  req.reportid;
+		def refid = req.parameters.objid;
+
+		def app = oboReportSvc.getApplication([ appid: refid ]);
+		app.lotowner  = app.location?.owner;
+		app.applicant.middleinitial = (app.applicant.middlename ? app.applicant.middlename[0].toString() : '');
+
+		def professionals = oboReportSvc.getProfessionals([appid: refid]);
+		app.designprofessionals = getProfessionalData("designprofessional", professionals)
+		app.supervisors = getProfessionalData("supervisor", professionals)
+
+		app.bldgpermit.location.text = formatAddress( app.bldgpermit.location );
+
+		app.qrcode = "qrcode:" + app.objid;
+		app.reportid = reportid;
+		app.template = "reports/obo/" + reportid;
+		result.data = app;
+	}
+
+	def formatAddress( def addr ) {
+		def lst = [];
+		lst << [addr.unitno, addr.bldgno, addr.bldgname ].findAll{it!=null}.join(" ");
+		lst << [addr.street, addr.subdivision ].findAll{it!=null}.join(",");
+		lst << [addr.barangay?.name, addr.citymunicipality, addr.province ].findAll{it!=null}.join(",");
+		return lst.findAll{it}.join(",");		
+	}
+
+	def getProfessionalData(type, profList) {
+		def prof,title,role;
+		def professionals = []
+		profList.each {
+			if( type == "designprofessional") {
+				prof = it.designprofessional;
+				title = it.section.title;
+				role = it.section.designprofessionalrole;
+			}
+			else {
+				prof = it.supervisor;
+				title = it.section.title + " WORKS";
+				role = it.section.supervisorrole;
+			}
+			if(!role) return;
+			if( !prof?.objid ) prof = null;
+
+			def m = [section:title];
+			m.idx = it.section.idx;
+			m.name = (prof!=null) ? prof.firstname + (prof.middlename ? " " + prof.middlename + " " : " ")  + prof.lastname : null;
+			m.address = [text: prof?.address?.text];
+			m.prc = prof?.prc;
+			m.ptr = prof?.ptr;
+			m.tin = prof?.tin;
+			professionals << m;
+		}
+		return professionals.sort{ it.idx };
+	}
+
+	
+
+}
