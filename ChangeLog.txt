@@ -1,0 +1,4 @@
+* Version: 
+    - OBO: bldgpermit: visible/searchable objid
+    - OBO: professional: add orgcode and lookup updates
+    - Epayment monitoring support
