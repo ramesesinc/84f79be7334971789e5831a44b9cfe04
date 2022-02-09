@@ -1,0 +1,16 @@
+import com.rameses.annotations.*; 
+import com.rameses.http.BasicHttpClient;
+
+class GCashLogService {
+
+	@DataContext('gcash_log')
+	def em_log;
+
+	@ProxyMethod 
+	public def getList( param ) {
+		if ( !param.paymentrefid )
+			throw new Exception('paymentrefid parameter is required');
+
+		return em_log.find([ poid: param.paymentrefid ]).orderBy('txndate').list();
+	}
+} 
