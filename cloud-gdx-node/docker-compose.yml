@@ -1,12 +1,11 @@
 version: "3"
 
 services:
-
   cloud-gdx-node:
-    image: ramesesinc/cloud-gdx-node:1.3.0
+    image: ramesesinc/cloud-gdx-node:1.3.1
     container_name: cloud-gdx-node
     restart: always
-    logging: 
+    logging:
       driver: "json-file"
       options:
         max-file: "5"
