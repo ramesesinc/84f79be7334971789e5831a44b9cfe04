@@ -121,26 +121,34 @@ class PayMayaPaymentPartnerOptionInterceptor {
 
 	void checkOut(partner, po, checkout) {
 		def option = partner.info[checkout.type];
-		def urlPath = option.actionurl
-		def jsonData = JsonUtil.toString(partner.params)
+		def urlPath = option.actionurl;
+		def checkoutType = checkout.type.toString(); 
+		if ('wallet'.equalsIgnoreCase(checkoutType)) {
+			partner.params.requiredReferenceNumber = po.objid; 
+		}
 
+		def jsonData = JsonUtil.toString(partner.params)
+		
 		System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2"); 
 
 		def http = new BasicHttpClient()
 		def retval = http.post(urlPath, jsonData, option.headerpost)
-		if (retval.responsecode == 200) {
+		if ( retval.responsecode == 200 ) { 
+			log('checkout: (success) => '+ retval);
+
 			partner.checkout = JsonUtil.toMap(retval.data)
-			if ('card'.equalsIgnoreCase(checkout.type)) {
-				em_po.find([objid: po.objid]).update([checkoutid: partner.checkout.checkoutId, checkouttype: checkout.type])
+			if ('card'.equalsIgnoreCase(checkoutType)) {
+				em_po.find([objid: po.objid]).update([checkoutid: partner.checkout.checkoutId, checkouttype: checkoutType])
 			} 
-			else if ('wallet'.equalsIgnoreCase(checkout.type)) {
-				em_po.find([objid: po.objid]).update([checkoutid: partner.checkout.paymentId, checkouttype: checkout.type])
+			else if ('wallet'.equalsIgnoreCase(checkoutType)) {
+				em_po.find([objid: po.objid]).update([checkoutid: partner.checkout.paymentId, checkouttype: checkoutType])
 			}
 		} 
 		else {
 			partner.error = JsonUtil.toMap( retval.error ); 
 			partner.error.errormsg = partner.error?.error; 
-			log('afterPostPartnerWebhook: (error) => '+ partner.error);
+			
+			log('checkout: (error) => '+ partner.error);
 		} 
 	}
 
