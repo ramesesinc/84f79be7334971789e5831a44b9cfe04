@@ -60,7 +60,7 @@ class CloudPartnerService {
 
     def resolveList( list ) {
         list.each{ o-> 
-            it.channelid = [o.id, o.clientid].findAll{( it )}.join(':'); 
+            o.channelid = [o.id, o.clientid].findAll{( it )}.join(':'); 
         }
         return list; 
     }
