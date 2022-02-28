@@ -10,43 +10,58 @@ class CloudPartnerService {
    
     @ProxyMethod
     public def getList() {
-		return partner.getList();
+        def list = partner.getList(); 
+		return resolveList( list );
     } 
 
     // updated
     @ProxyMethod
     public def getActivePartners() {
-        return getList().findAll{( it.state.toString().equalsIgnoreCase('ACTIVE') )} 
+        def list = getList().findAll{( it.state.toString().equalsIgnoreCase('ACTIVE') )} 
+        return resolveList( list );
     } 
 
 
     @ProxyMethod
     public def getActiveList() {
-		return partner.orderBy("group.name").where(" state='ACTIVE' ").list();
+		def list = partner.orderBy("group.name").where(" state='ACTIVE' ").list();
+        return resolveList( list );
     }		
 
     @ProxyMethod
     public def getInactiveList() {
-		return partner.orderBy("group.name").where(" state='INACTIVE' ").list();
+		def list = partner.orderBy("group.name").where(" state='INACTIVE' ").list();
+        return resolveList( list );
     }		
 
  	@ProxyMethod
     public def findByGroupAndName(params) {
-		return partner.find( ["group.name": params.groupname, "name": params.name ] ).first();
+		def list = partner.find( ["group.name": params.groupname, "name": params.name ] ).first();
+        return resolveList( list );
     }		
 
     @ProxyMethod
     public def findByCode(params) {
-        return partner.find( ["group.name": params.groupname, "name": params.name ] ).first();
+        def list = partner.find( ["group.name": params.groupname, "name": params.name ] ).first();
+        return resolveList( list );
     }   	
 
     @ProxyMethod
     public def findById(params) {
-        return partner.find( [id: params.id ] ).first();
+        def list = partner.find( [id: params.id ] ).first();
+        return resolveList( list );
     }           
 
     @ProxyMethod
     public def getBarangayList( def param ) {
         return barangayEm.find([parentid: param.orgcode]).select("objid,name").orderBy("name").list(); 
     } 
+
+
+    def resolveList( list ) {
+        list.each{ o-> 
+            it.channelid = [o.id, o.clientid].findAll{( it )}.join(':'); 
+        }
+        return list; 
+    }
 }

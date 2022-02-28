@@ -16,5 +16,6 @@
 		
 		<field name="email" />
 		<field name="phoneno" />
+		<field name="clientid" />
 	</element>
 </schema>
