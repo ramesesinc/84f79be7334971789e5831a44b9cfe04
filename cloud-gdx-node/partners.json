@@ -95,5 +95,7 @@
   { "id": "05701", "channel": "05701", "consumer": 0 },
   { "id": "07505", "channel": "07505", "consumer": 0 },
   { "id": "04745", "channel": "04745", "consumer": 0 },
-  { "id": "02705", "channel": "02705", "consumer": 0 }
+  { "id": "02705", "channel": "02705", "consumer": 0 },
+  { "id": "04701", "channel": "04701", "consumer": 0 },
+  { "id": "04722", "channel": "04742", "consumer": 0 }
 ]
