@@ -54,7 +54,7 @@ class CloudPaymentService {
 			po_cancelled_db.create( po ); 
 			po_db.find([ objid: po.objid ]).delete(); 
 			params.action = "epayment:cancel-payment-order";
-			gdx.send( params, params.orgcode ); 
+			//gdx.send( params, params.orgcode ); 
 		} 
 		return "ok"; 
 	} 
@@ -217,7 +217,7 @@ class CloudPaymentService {
 
 		pay.action = "epayment:post-payment";
 		println '\n** gdx.send '
-		gdx.send( pay, orgcode );
+		//gdx.send( pay, orgcode );
 
 		//This is returned to give feedback to the web page.
 		pmt.info = po;
