@@ -80,6 +80,8 @@ class CloudPaymentService {
 		}
 
 		def formaction = payoption.paypartner?.info?.testactionurl; 
+        if ( !formaction ) formaction = payoption.paypartner?.info?.actionurl;
+        
 		if (payoption.paypartner?.checkout) {
 			formaction = payoption.paypartner.checkout.redirectUrl;
 			if ( !formaction ) 
