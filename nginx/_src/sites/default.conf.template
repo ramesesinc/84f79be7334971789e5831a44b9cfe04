@@ -10,8 +10,9 @@ server {
     ## 
     ## re-routing 
     ## 
-    location /partner/(bohol_tagbilaran|aklan_aklan) {
+    location ^/xpartner/bohol_tagbilaran {
         include conf.d/proxy.conf;
+        #rewrite ^/xpartner/(.*)$ /xpartner/$1 break; 
         proxy_pass http://${app_server_ip}:5001;
     }
 
