@@ -24,6 +24,7 @@ server {
     }
     location ~* ^/api/ {
         include conf.d/proxy.conf;
+        proxy_set_header content-type "application/json";
         proxy_pass http://${app_server_ip}:5001;
     }
 
@@ -48,12 +49,6 @@ server {
 
     location ~* ^/webhooks {
         rewrite ^/(.*)$  /filipizen/$1 last;
-    }
-
-    location ~* ^/api/epayment {
-        include conf.d/proxy.conf;
-        proxy_set_header content-type "application/json";
-        proxy_pass http://${app_server_ip}:5001;
     }
 
     location ~* ^/filipizen/(epayment|payoptions|service) {
