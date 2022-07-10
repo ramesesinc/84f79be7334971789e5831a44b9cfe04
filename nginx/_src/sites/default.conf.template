@@ -6,6 +6,16 @@ server {
         stub_status;
     }
     
+
+    ## 
+    ## re-routing 
+    ## 
+    location /partner/(bohol_tagbilaran|aklan_aklan) {
+        include conf.d/proxy.conf;
+        proxy_pass http://${app_server_ip}:5001;
+    }
+
+
     ## 
     ## main routing 
     ## 
