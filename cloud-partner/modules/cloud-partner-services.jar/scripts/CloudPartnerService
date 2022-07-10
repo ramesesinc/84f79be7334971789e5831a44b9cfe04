@@ -48,8 +48,9 @@ class CloudPartnerService {
 
     @ProxyMethod
     public def findById(params) {
-        def list = partner.find( [id: params.id ] ).first();
-        return resolveList( list );
+        def org = partner.find( [id: params.id ] ).first();
+        resolveList([ org ]);
+        return org; 
     }           
 
     @ProxyMethod
