@@ -6,5 +6,7 @@ services:
     container_name: cloud-filipizen-sveltekit
     env_file:
       - ./env.conf
+      - ../_res/env.conf
+      - ../_custom/env.conf
     ports:
       - "5001:3000"
