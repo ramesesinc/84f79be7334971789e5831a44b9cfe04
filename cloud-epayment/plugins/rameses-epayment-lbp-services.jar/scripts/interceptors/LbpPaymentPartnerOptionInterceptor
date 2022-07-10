@@ -7,12 +7,17 @@ class LbpPaymentPartnerOptionInterceptor {
 
 	final String PAY_PARTNER_ID = "LBP";
 
+	@DataContext( dynamic=true )
+	def dynaEm; 
+
+	@Service( dynamic=true)
+	def dynaSvc; 
+
 	@Service('CloudPaymentService')
 	def cloudPaymentSvc; 
 
 	@Service('DateService')
 	def dateSvc; 
-
 
 	def formatter = new java.text.DecimalFormat('0.00');
 
@@ -22,6 +27,17 @@ class LbpPaymentPartnerOptionInterceptor {
 		def m = evt.args[0];
 		m.paypartnerid = PAY_PARTNER_ID; 
 		m.paymentrefid = m.MerchantRefNo; 
+
+		if ( m.MerchantRefNum ) { 
+			m.paymentrefid = m.MerchantRefNum; 
+
+			m.eps = [:]; 
+			m.each{ k,v-> 
+				m.eps.put(k, v); 
+			} 
+		}
+
+		log('beforePostPartnerPayment (m) => '+ m); 
 	}
 
 	@After(pattern="CloudPaymentService.postPartnerPaymentError", eval="#{args[0].statusid == 'landbankerror' }")
@@ -43,44 +59,22 @@ class LbpPaymentPartnerOptionInterceptor {
 		def po = evt.args[0].paymentorder; 
 		def partner = evt.result.paypartner; 
 
-		def amount = po.amount; 
-		def webfee = (po.webfee ? po.webfee : 0.00); 
-		def samt = (po.amount ? formatter.format( po.amount ) : "");
-
-		def paidbystr = po.paidby.replaceAll('&','and'); 
-
-		def params = [:];
-		params.MerchantCode = partner.info?.merchantcode; 
-		params.MerchantRefNo = po.objid; 
+		if ( !partner.info?.merchantcode ) {
+			log("buildPaymentPartnerOption (error) =>  merchantcode  is required");
+			throw new Exception('merchantcode is required');
+		}
 
 		def txntypename = po.txntypename; 
 		if ( !txntypename.toString().matches("Business Permit|Real Property Tax")) {
 			txntypename = "Other Taxes and Fees";
 		}
 
-		def parbuff = new StringBuilder(); 
-		parbuff.append("Transaction_type=${txntypename};Name of Payor=${paidbystr};Tax Reference Number=${po.objid};Remarks=NA");
-		
-		if ( po.email ) { 
-			parbuff.append(";Email Address=${po.email}"); 
+		if ( partner.info?.eps ) {
+			buildEpsPostPaymentRequest( po, partner, txntypename, partner.info.eps ); 
 		}
-
-		params.Particulars = parbuff.toString(); 
-
-		if ( partner.info?.particulars ) {
-			params.Particulars = evalExpr( partner.info.particulars, [ txntype: txntypename, paidby: paidbystr, refno: po.objid ]); 
+		else {
+			buildEppPostPaymentRequest( po, partner, txntypename ); 
 		}
-
-		params.Amount = samt;
-		params.PayorName = po.paidby;
-		params.PayorEmail = ( po.email ? po.email : '');
-		params.ReturnURLOK = ( partner.info?.testsuccessurl ? partner.info?.testsuccessurl : partner.info?.successurl ); 
-		params.ReturnURLError = ( partner.info?.testerrorurl ? partner.info?.testerrorurl : partner.info?.errorurl ); 
-
-		def secval = partner.info?.merchantcode + po.objid + samt.replace('.','');
-    	params.Hash = com.rameses.util.Encoder.MD5.encode(secval).toLowerCase();
-		log('getPaymentPartnerOption params => ' + params); 
-		partner.params = params; 
 	}
 
 	@After( pattern="CloudPaymentService.getPostPaymentParams", eval="#{args[0]?.paypartnerid.toString().toLowerCase() == 'lbp'}") 
@@ -89,13 +83,40 @@ class LbpPaymentPartnerOptionInterceptor {
 		def pmt = evt.result;
 
 		pmt.paypartnerid = PAY_PARTNER_ID;
-		pmt.traceid = params.EppRefNo;
-		pmt.tracedate = params.Datestamp;
-		pmt.amount = params.Amount;
 
-		def particulars = splitParticulars( params.Particulars ); 
-		if ( particulars ) {
-			pmt.paymentrefid = particulars['Tax Reference Number'];
+		if ( params.eps ) {
+			// API: EPS
+			pmt.traceid = params.LBPRefNum; 
+			pmt.amount = params.TrxnAmount; 
+
+			if ( pmt.amount instanceof String ) {
+				pmt.amount = new java.math.BigDecimal( pmt.amount.toString()); 
+			}
+
+			def strdate = null; 
+			if ( params.LBPConfDate instanceof List ) {
+				strdate = params.LBPConfDate.first();
+			} 
+			else {
+				strdate = params.LBPConfDate; 
+			}
+
+			def buff = new StringBuilder();
+			buff.append( strdate.substring(0, 4)).append("-");
+			buff.append( strdate.substring(4, 6)).append("-");
+			buff.append( strdate.substring(6, 8));
+			pmt.tracedate = buff.toString(); 
+		}
+		else {
+			// API: EPP
+			pmt.traceid = params.EppRefNo;
+			pmt.tracedate = params.Datestamp;
+			pmt.amount = params.Amount; 
+
+			def particulars = splitParticulars( params.Particulars ); 
+			if ( particulars ) {
+				pmt.paymentrefid = particulars['Tax Reference Number'];
+			}
 		}
 	} 	
 
@@ -148,4 +169,121 @@ class LbpPaymentPartnerOptionInterceptor {
 	void log( msg ) {
 		println ('\n'+ PAY_PARTNER_ID +': '+ msg);
 	}
+
+
+	void buildEppPostPaymentRequest( po, partner, txntypename ) {
+		def amount = po.amount; 
+		def webfee = (po.webfee ? po.webfee : 0.00); 
+		def samt = (po.amount ? formatter.format( po.amount ) : "");
+
+		def paidbystr = po.paidby.replaceAll('&','and'); 
+
+		def params = [:];
+		params.MerchantCode = partner.info?.merchantcode; 
+		params.MerchantRefNo = po.objid; 
+
+		def parbuff = new StringBuilder(); 
+		parbuff.append("Transaction_type=${txntypename};Name of Payor=${paidbystr};Tax Reference Number=${po.objid};Remarks=NA");
+		
+		if ( po.email ) { 
+			parbuff.append(";Email Address=${po.email}"); 
+		}
+
+		params.Particulars = parbuff.toString(); 
+
+		if ( partner.info?.particulars ) {
+			params.Particulars = evalExpr( partner.info.particulars, [ txntype: txntypename, paidby: paidbystr, refno: po.objid ]); 
+		}
+
+		params.Amount = samt;
+		params.PayorName = po.paidby;
+		params.PayorEmail = ( po.email ? po.email : '');
+		params.ReturnURLOK = ( partner.info?.testsuccessurl ? partner.info?.testsuccessurl : partner.info?.successurl ); 
+		params.ReturnURLError = ( partner.info?.testerrorurl ? partner.info?.testerrorurl : partner.info?.errorurl ); 
+
+		def secval = partner.info?.merchantcode + po.objid + samt.replace('.','');
+    	params.Hash = com.rameses.util.Encoder.MD5.encode(secval).toLowerCase();
+		log('buildEppPostPaymentRequest (params) => ' + params); 
+		partner.params = params; 
+	} 
+
+	void buildEpsPostPaymentRequest( po, partner, txntypename, epsConf ) {
+		log('buildEpsPostPaymentRequest (epsConf) => ' + epsConf); 
+
+		if ( !epsConf?.postpayment_url )
+			throw new Exception("eps.postpayment_url  is required in partner_info config");
+
+		txntypename = 'Real Property Tax';
+
+		def amount = po.amount; 
+		def webfee = (po.webfee ? po.webfee : 0.00); 
+		def samt = (po.amount ? formatter.format( po.amount ) : "");
+
+		def paidbystr = po.paidby.replaceAll('&','and'); 
+
+		def params = [:]; 
+		params.trxnamt = samt;
+		params.merchantcode = partner.info?.merchantcode; 
+		params.bankcode = 'B000'; 
+
+		// Transaction type
+		params.trxndetails = txntypename; 
+
+		// BIN/Reference Number/Tax Reference Number
+		params.trandetail1 = po.objid; 
+		
+		// Name/Name of Payor
+		params.trandetail2 = paidbystr; 
+
+        // Business name/Property Number/Remarks
+		params.trandetail3 = (po.refno ? po.refno : 'NA');
+
+		// Business Owner Name/Declared Owner/Email Address
+		params.trandetail4 = '';
+
+		// Business Address/Assessed Valued		
+		params.trandetail5 = '';
+
+		// Email Address
+		params.trandetail6 = (po.email ? po.email : ''); 
+
+		params.trandetail7 = params.trandetail8 = ''; 
+		params.trandetail9 = params.trandetail10 = ''; 
+		params.trandetail11 = params.trandetail12 = ''; 
+		params.trandetail13 = params.trandetail14 = ''; 
+		params.trandetail15 = params.trandetail16 = ''; 
+		params.trandetail17 = params.trandetail18 = ''; 
+		params.trandetail19 = params.trandetail20 = ''; 
+		
+		params.username = (epsConf.username ? epsConf.username : '');
+		params.password = (epsConf.password ? epsConf.password : '');
+
+		def secretkey = (epsConf.secretkey ? epsConf.secretkey : '');
+		def values = [
+			params.trxnamt, params.merchantcode, params.trxndetails, 
+			params.trandetail1, params.trandetail2, params.trandetail3, 
+			params.trandetail4, params.trandetail5, params.trandetail6, 
+			params.trandetail7, params.trandetail8, params.trandetail9, 
+			params.trandetail10, 
+			params.trandetail11, params.trandetail12, params.trandetail13, 
+			params.trandetail14, params.trandetail15, params.trandetail16, 
+			params.trandetail17, params.trandetail18, params.trandetail19, 
+			params.trandetail20, params.username, params.password, 
+			secretkey 
+		];
+		def constr = values.findAll{( it != null )}.join(''); 
+
+		def api = dynaSvc.lookup('LbpEpsAPI');
+		params.checksum = api.encodeSHA256( constr ).toUpperCase(); 
+
+		params.callbackurl = partner.info?.successurl; 
+
+		log('buildEpsPostPaymentRequest (params) => ' + params); 
+
+		def resp = api.postPayment( epsConf.postpayment_url, params );
+		if ( resp.error ) throw new Exception( resp.error.toString()); 
+
+		partner.params = [:]; 
+		partner.info.actionurl = resp.url; 
+	} 
 }

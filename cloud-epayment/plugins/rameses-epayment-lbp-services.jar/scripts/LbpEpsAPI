@@ -1,0 +1,85 @@
+import com.rameses.annotations.*; 
+
+class LbpEpsAPI { 
+
+	void log( msg ) { 
+		println ('\nLbpEpsAPI: '+ msg); 
+	} 
+
+
+	@ProxyMethod 
+	public String encodeSHA256( str ) {
+		def md = java.security.MessageDigest.getInstance("SHA-256");
+        def hash = md.digest( str.getBytes( java.nio.charset.StandardCharsets.UTF_8 ));
+        
+        def buff = new StringBuilder();
+        for (int i=0; i < hash.length; i++) {
+            String hex = Integer.toHexString(0xff & hash[i]);
+            if ( hex.length() == 1) { 
+                buff.append('0');
+            }
+            buff.append( hex ); 
+        }
+        return buff.toString(); 
+	} 
+
+	@ProxyMethod 
+	public def postPayment( url, data ) {
+
+		def buff = new StringBuilder();
+		data.each{ k,v-> 
+			if ( buff.length() > 0 ) buff.append('&'); 
+
+			buff.append(k +'='+ (v == null ? '' : v));
+		}
+
+		
+		def http = new com.rameses.http.BasicHttpClient(); 
+		def retval = http.post( url, buff.toString(), [:]); 
+
+		def outcome = [:]; 
+
+		if ( retval.responsecode == 200 ) { 
+			log('postPayment (success) => ' + retval); 
+
+			def strdata = retval.data.toString();
+			if ( strdata.startsWith("00|")) {
+				outcome.url = strdata.substring(3).trim(); 
+			}
+			else {
+				def statMap = getStatCodeMap();
+				int idx = strdata.indexOf('|'); 
+				if ( idx > 0 ) {
+					outcome.code = strdata.substring(0, idx);
+					outcome.error = statMap.get( outcome.code ).toString()
+				}
+				else {
+					outcome.error = strdata; 
+				}
+			}
+		}
+		else {
+			log('postPayment (error) => ' + retval); 
+			outcome.code = retval.responsecode;
+			outcome.error = retval.error; 
+		}
+
+		log('postPayment (outcome) => ' + outcome); 
+		return outcome; 
+	}
+
+
+	def getStatCodeMap() {
+		return [
+			"21": "Parameter(s) missing", 
+			"22": "Invalid parameter length", 
+			"23": "Invalid parameter data type", 
+			"24": "Reference number not found", 
+			"25": "Invalid Checksum", 
+			"29": "Incorrect/Invalid Transaction Type", 
+			"36": "Total of trandetail11-19 should be equal to trxamt (applicable for merchants with split fee/amount crediting)", 
+			"37": "Invalid Fee Amount", 
+			"99": "General Exception Encountered"
+		]; 
+	}
+}

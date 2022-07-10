@@ -1,0 +1,99 @@
+import com.rameses.annotations.*; 
+
+class LbpEpsTestService { 
+
+	@Service( dynamic=true)
+	def dynaSvc; 
+
+	def config = [ 
+		merchantcode: "0508", 
+		successurl: "http://107.21.113.74:90/payoptions/landbanksuccess", 
+		eps: [ 
+			secretkey: "N\\HWJUKFHQX", username: "username", password: "password", 
+			postpayment_url: "http://222.127.109.129:8080/LBP-LinkBiz-RS/rs/postpayment" 
+		]
+	]; 
+
+	void log( msg ) { 
+		println ('\nLBP: '+ msg); 
+	} 
+
+	def postPayment() { 
+		def data = buildPostPaymentRequest();
+
+		def api = dynaSvc.lookup('LbpEpsAPI');
+
+		def url = config.eps.postpayment_url; 
+		log('postPayment (actionurl) => ' + url); 
+
+		def resp = api.postPayment( url, data );
+		return resp;
+	} 
+
+
+	def buildPostPaymentRequest() { 
+		def epsConf = config.eps; 
+
+		def paymentrefid = 'TMP'+ new java.text.SimpleDateFormat('yyyyMMddHHmmss').format( new java.util.Date( System.currentTimeMillis())); 
+
+		def params = [:]; 
+		params.trxnamt = '30.00'; 
+		params.merchantcode = config.merchantcode; 
+		params.bankcode = 'B000'; 
+
+		// Transaction type
+		params.trxndetails = 'Real Property Tax';
+
+		// BIN/Reference Number/Tax Reference Number
+		params.trandetail1 = paymentrefid; 
+		
+		// Name/Name of Payor
+		params.trandetail2 = 'JUAN DELA CRUZ'; 
+
+        // Business name/Property Number/Remarks
+		params.trandetail3 = 'NA'; 
+
+		// Business Owner Name/Declared Owner/Email Address
+		params.trandetail4 = '';
+
+		// Business Address/Assessed Valued		
+		params.trandetail5 = '';
+
+		// Email Address
+		params.trandetail6 = '';
+
+		params.trandetail7 = params.trandetail8 = ''; 
+		params.trandetail9 = params.trandetail10 = ''; 
+		params.trandetail11 = params.trandetail12 = ''; 
+		params.trandetail13 = params.trandetail14 = ''; 
+		params.trandetail15 = params.trandetail16 = ''; 
+		params.trandetail17 = params.trandetail18 = ''; 
+		params.trandetail19 = params.trandetail20 = ''; 
+
+		params.username = (epsConf.username ? epsConf.username : '');
+		params.password = (epsConf.password ? epsConf.password : '');
+
+		def secretkey = (epsConf.secretkey ? epsConf.secretkey : '');
+		def values = [
+			params.trxnamt, params.merchantcode, params.trxndetails, 
+			params.trandetail1, params.trandetail2, params.trandetail3, 
+			params.trandetail4, params.trandetail5, params.trandetail6, 
+			params.trandetail7, params.trandetail8, params.trandetail9, 
+			params.trandetail10, 
+			params.trandetail11, params.trandetail12, params.trandetail13, 
+			params.trandetail14, params.trandetail15, params.trandetail16, 
+			params.trandetail17, params.trandetail18, params.trandetail19, 
+			params.trandetail20, params.username, params.password, 
+			secretkey 
+		];
+		def constr = values.findAll{( it != null )}.join(''); 
+
+		def api = dynaSvc.lookup('LbpEpsAPI');
+		params.checksum = api.encodeSHA256( constr ).toUpperCase(); 
+
+		params.callbackurl = config.successurl; 
+
+		log('buildPostPaymentRequest (params) => ' + params); 
+		return params; 
+	} 
+}
